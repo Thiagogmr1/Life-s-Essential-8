@@ -1,0 +1,72 @@
+/* src/pages/Home/Home.css */
+.home {
+  min-height: calc(100vh - var(--header-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: var(--paper);
+}
+  
+  .home__content {
+    max-width: 560px;
+    text-align: center;
+  }
+  
+  .home__eyebrow {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand);
+    background: var(--brand-soft);
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .home__title {
+    font-size: clamp(2.5rem, 6vw, 3.5rem);
+    margin-bottom: 0.25rem;
+  }
+  
+  .home__lead {
+    margin-top: 1.5rem;
+    font-size: 1.05rem;
+  }
+  
+  .home__cta {
+    background: var(--brand);
+    color: var(--surface);
+    border: none;
+    padding: 0.85rem 2rem;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  
+  .home__cta:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-card);
+  }
+  
+  .home__disclaimer {
+    margin-top: 1.5rem;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    opacity: 0.8;
+  }
+
+  @media (max-width: 640px) {
+    .home {
+      padding: 1.25rem;
+    }
+  
+    .home__cta {
+      width: 100%;
+      padding: 0.9rem 1.5rem;
+    }
+  }

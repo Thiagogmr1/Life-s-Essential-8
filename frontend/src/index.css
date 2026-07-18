@@ -1,0 +1,48 @@
+/* src/index.css */
+@import "./styles/variables.css";
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0 0 0.5em;
+}
+
+p {
+  color: var(--ink-soft);
+  margin: 0 0 1em;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+a { color: var(--brand); }
+
+/* Respeita preferência de menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+/* Foco visível — acessibilidade, importante num instrumento de saúde */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}

@@ -1,0 +1,39 @@
+/* src/styles/variables.css */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+:root {
+  /* Identidade UniEVANGÉLICA */
+  --uni-navy: #16223F;        /* navy principal — cabeçalho, títulos */
+  --uni-navy-deep: #0E1830;   /* navy mais escuro — rodapé, barra superior */
+  --uni-red: #C4202F;         /* vermelho da logo */
+  --uni-gold: #D9A441;        /* dourado — CTAs, destaques */
+  --uni-sky: #2DA9E0;         /* azul-céu — acentos gráficos */
+
+  --paper: #F3F5F9;           /* fundo — leve tom azulado, institucional */
+  --surface: #FFFFFF;
+  --ink: var(--uni-navy);
+  --ink-soft: #57627E;
+  --line: #DBE1EC;
+
+  --brand: var(--uni-navy);       /* botões primários, links */
+  --brand-soft: #E7ECF5;          /* fundo suave de destaque */
+  --pulse: var(--uni-red);        /* traço de ECG — mantém função de acento vital */
+
+  --score-high: #1F7A5C;   /* verde — mantido, sem conflito com a paleta da Uni */
+  --score-mid: var(--uni-gold);   /* dourado já reaproveitado como "moderado" */
+  --score-low: var(--uni-red);    /* vermelho já reaproveitado como "baixa" */
+
+  --font-display: "Montserrat", sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  --radius: 8px;
+  --header-height: 74px;   /* era 64px */
+  --shadow-card: 0 1px 3px rgba(14, 24, 48, 0.08), 0 8px 24px rgba(14, 24, 48, 0.07);
+}
+
+@media (max-width: 640px) {
+  :root {
+    --header-height: 72px;
+  }
+}
