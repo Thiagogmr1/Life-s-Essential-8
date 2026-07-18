@@ -1,0 +1,87 @@
+/* src/components/QuestionCard/QuestionCard.css */
+.question-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 480px;
+  }
+  
+  .question-card__label {
+    font-size: 1.35rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .question-card__body label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    margin-bottom: 0.6rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  
+  .question-card__body label:has(input:checked) {
+    border-color: var(--brand);
+    background: var(--brand-soft);
+  }
+  
+  .question-card__body input[type="number"] {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .question-card__body input[type="radio"],
+  .question-card__body input[type="checkbox"] {
+    accent-color: var(--brand);
+  }
+  
+  .question-card__actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+  }
+  
+  .question-card__next {
+    background: var(--brand);
+    color: var(--surface);
+    border: none;
+    padding: 0.7rem 1.75rem;
+    border-radius: var(--radius);
+    font-weight: 600;
+    margin-left: auto;
+  }
+  
+  .question-card__next:disabled {
+    background: var(--line);
+    color: var(--ink-soft);
+    cursor: not-allowed;
+  }
+  
+  .question-card__back {
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    text-decoration: underline;
+  }
