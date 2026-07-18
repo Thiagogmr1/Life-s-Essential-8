@@ -15,7 +15,7 @@ export default function Home() {
         <p className="home__lead">
           Avalie sua saúde cardiovascular a partir de oito indicadores clínicos
           e comportamentais reconhecidos internacionalmente. O resultado é
-          orientativo — não substitui avaliação médica.
+          orientativo, não substitui avaliação médica.
         </p>
         <button className="home__cta" onClick={() => navigate("/questionario")}>
           Iniciar avaliação
