@@ -1,0 +1,47 @@
+/* src/components/Header/Header.css */
+.app-header {
+    height: var(--header-height);
+    background: var(--uni-navy-deep);
+    display: flex;
+    align-items: center;
+    padding: 0 2rem;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+  
+  .app-header__brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    color: var(--surface);
+  }
+  
+  .app-header__logo {
+    height: 120px;   /* era 34px */
+    width: auto;
+    object-fit: contain;
+    margin-top: 9px;
+  }
+  
+  .app-header__divider {
+    width: 1px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.25);
+  }
+  
+  .app-header__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--surface);
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+  }
+  
+  .app-header__subtitle {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.65);
+  }
