@@ -38,3 +38,14 @@
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
+
+  @media (max-width: 640px) {
+    .score-badge__circle {
+      width: 110px;
+      height: 110px;
+    }
+  
+    .score-badge__value {
+      font-size: 2.25rem;
+    }
+  }

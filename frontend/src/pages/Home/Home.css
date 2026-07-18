@@ -59,3 +59,14 @@
     color: var(--ink-soft);
     opacity: 0.8;
   }
+
+  @media (max-width: 640px) {
+    .home {
+      padding: 1.25rem;
+    }
+  
+    .home__cta {
+      width: 100%;
+      padding: 0.9rem 1.5rem;
+    }
+  }

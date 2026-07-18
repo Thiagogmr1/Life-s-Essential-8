@@ -74,3 +74,19 @@
     background: var(--brand-soft);
     color: var(--brand);
   }
+
+  @media (max-width: 640px) {
+    .results-page {
+      padding: 1.5rem 1rem;
+    }
+  
+    .results-card {
+      padding: 1.5rem;
+    }
+  }
+  
+  @media (max-width: 380px) {
+    .results-card__actions {
+      flex-direction: column;
+    }
+  }
