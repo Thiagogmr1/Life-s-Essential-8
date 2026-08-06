@@ -5,6 +5,7 @@ import { LE8_DOMAINS } from "../../data/le8Criteria";
 import ScoreBadge from "../../components/ScoreBadge/ScoreBadge";
 import DomainBar from "../../components/DomainBar/DomainBar";
 import "./Results.css";
+import { exportResultToPdf } from "../../utils/exportPdf";
 
 export default function Results() {
   const { result, resetAnswers } = useAssessment();
@@ -56,6 +57,9 @@ export default function Results() {
         <div className="results-card__actions">
           <button className="results-card__secondary" onClick={handleNewAssessment}>
             Nova avaliação
+          </button>
+          <button className="results-card__secondary" onClick={() => exportResultToPdf(result)}>
+            Exportar PDF
           </button>
           <Link to="/historico" className="results-card__primary">
             Ver histórico

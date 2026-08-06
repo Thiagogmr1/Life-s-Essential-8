@@ -2,6 +2,7 @@
 import { Link } from "react-router-dom";
 import { useAssessment } from "../../context/AssessmentContext";
 import "./History.css";
+import { exportHistoryToExcel } from "../../utils/exportExcel";
 
 export default function History() {
   const { history } = useAssessment();
@@ -10,6 +11,16 @@ export default function History() {
     <div className="history-page">
       <div className="history-card">
         <h1 className="history-card__title">Histórico</h1>
+        <h1 className="history-card__title">Histórico</h1>
+
+          {history.length > 0 && (
+            <button
+              className="history-card__export"
+              onClick={() => exportHistoryToExcel(history)}
+            >
+              Exportar planilha (Excel)
+            </button>
+          )}
 
         {history.length === 0 ? (
           <div className="history-card__empty">

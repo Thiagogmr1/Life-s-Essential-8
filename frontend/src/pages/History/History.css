@@ -86,3 +86,15 @@
       padding: 1.5rem;
     }
   }
+
+  .history-card__export {
+    background: var(--brand-soft);
+    color: var(--brand);
+    border: none;
+    padding: 0.6rem 1.1rem;
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-bottom: 1.5rem;
+  }
