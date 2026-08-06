@@ -51,6 +51,7 @@ export function AssessmentProvider({ children }) {
     const entry = {
       id: crypto.randomUUID(),
       date: new Date().toISOString(),
+      rawAnswers: { ...answers },
       ...calculated,
     };
     setResult(entry);
