@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select
 from app.database import get_session
 from app.models import Usuario
-from app.routers import usuarios
+from app.routers import usuarios, avaliacoes
 
 app = FastAPI(title="Life's Essential 8 API")
 
@@ -17,6 +17,7 @@ app.add_middleware(
 )
 
 app.include_router(usuarios.router)
+app.include_router(avaliacoes.router)
 
 
 @app.get("/")
