@@ -1,9 +1,8 @@
 # backend/app/models.py
 import uuid
-from datetime import datetime
-from typing import Optional
+from datetime import datetime, timezone
 from sqlmodel import SQLModel, Field, Column
-from sqlalchemy import JSON
+from sqlalchemy.dialects.postgresql import JSONB
 
 
 class Usuario(SQLModel, table=True):
@@ -14,15 +13,17 @@ class Usuario(SQLModel, table=True):
     idade: int
     email: str = Field(unique=True, index=True)
     senha_hash: str
-    criado_em: datetime = Field(default_factory=datetime.utcnow)
+    criado_em: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class Avaliacao(SQLModel, table=True):
     __tablename__ = "avaliacoes"
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    usuario_id: uuid.UUID = Field(foreign_key="usuarios.id")
-    data: datetime = Field(default_factory=datetime.utcnow)
+    usuario_id: uuid.UUID = Field(
+        foreign_key="usuarios.id", ondelete="CASCADE", index=True
+    )
+    data: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), index=True)
     score_total: int
     classificacao: str
     score_dieta: int
@@ -33,4 +34,4 @@ class Avaliacao(SQLModel, table=True):
     score_colesterol: int
     score_glicemia: int
     score_pressao: int
-    respostas_brutas: dict = Field(sa_column=Column(JSON))
+    respostas_brutas: dict = Field(sa_column=Column(JSONB))

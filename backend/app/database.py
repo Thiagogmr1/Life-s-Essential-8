@@ -14,7 +14,7 @@ DB_PASSWORD = quote_plus(os.getenv("DB_PASSWORD"))  # escapa caracteres especiai
 
 DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL, echo=False)
 
 
 def get_session():
