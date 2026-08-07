@@ -8,8 +8,18 @@ import "./Results.css";
 import { exportResultToPdf } from "../../utils/exportPdf";
 
 export default function Results() {
-  const { result, resetAnswers } = useAssessment();
+  const { result, resetAnswers, enviando } = useAssessment();
   const navigate = useNavigate();
+
+  if (enviando) {
+    return (
+      <div className="results-page">
+        <div className="results-card">
+          <p>Calculando resultado...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!result) {
     return (

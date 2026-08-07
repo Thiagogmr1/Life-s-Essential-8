@@ -1,13 +1,13 @@
 // src/context/AssessmentContext.jsx
 import { createContext, useContext, useState, useCallback } from "react";
-import { calculateFullAssessment } from "../utils/scoring";
+import { calculateFullAssessment, DadosInsuficientesError } from "../utils/scoring";
+import { api, ApiError } from "../utils/api";
+import { mapAvaliacaoFromApi } from "../utils/mapAvaliacao";
 
 const AssessmentContext = createContext(null);
 
-// Formato inicial das respostas — reflete exatamente os campos que
-// scoring.js espera em calculateFullAssessment()
 const initialAnswers = {
-  diet: {}, // { fruitsVeggies, wholeGrains, fish, sodium, sugaryDrinks, redMeat, nutsLegumes, fatType }
+  diet: {},
   physicalActivityMinutes: null,
   nicotineStatus: null,
   sleepHours: null,
@@ -25,14 +25,14 @@ const initialAnswers = {
 export function AssessmentProvider({ children }) {
   const [answers, setAnswers] = useState(initialAnswers);
   const [result, setResult] = useState(null);
-  const [history, setHistory] = useState([]); // mock em memória, sem persistência ainda
+  const [history, setHistory] = useState([]);
+  const [enviando, setEnviando] = useState(false);
+  const [erro, setErro] = useState(null);
 
-  // Atualiza um campo simples (ex: setField("sleepHours", 7))
   const setField = useCallback((field, value) => {
     setAnswers((prev) => ({ ...prev, [field]: value }));
   }, []);
 
-  // Atualiza um item dentro do bloco de dieta (ex: setDietItem("fish", 2))
   const setDietItem = useCallback((itemId, points) => {
     setAnswers((prev) => ({
       ...prev,
@@ -43,21 +43,53 @@ export function AssessmentProvider({ children }) {
   const resetAnswers = useCallback(() => {
     setAnswers(initialAnswers);
     setResult(null);
+    setErro(null);
   }, []);
 
-  // Roda o cálculo e guarda o resultado + adiciona ao histórico da sessão
-  const submitAssessment = useCallback(() => {
-    const calculated = calculateFullAssessment(answers);
-    const entry = {
-      id: crypto.randomUUID(),
-      date: new Date().toISOString(),
-      rawAnswers: { ...answers },
-      ...calculated,
-    };
-    setResult(entry);
-    setHistory((prev) => [...prev, entry]);
-    return entry;
+  // Envia respostas_brutas pro backend, que recalcula os scores
+  // server-side (ver scoring.py) e persiste. O resultado exibido na
+  // tela vem da resposta da API, não do cálculo local — o backend é
+  // a fonte da verdade (ver decisão sobre AvaliacaoCriar).
+  const submitAssessment = useCallback(async () => {
+    setEnviando(true);
+    setErro(null);
+    try {
+      // Agora isso realmente lança erro se peso/altura estiverem
+      // ausentes, em vez de mascarar com bmi = null → score 100.
+      calculateFullAssessment(answers);
+
+      const avaliacaoSalva = await api.criarAvaliacao(answers);
+      const resultMapeado = mapAvaliacaoFromApi(avaliacaoSalva);
+      setResult(resultMapeado);
+      setHistory((prev) => [resultMapeado, ...prev]);
+      return resultMapeado;
+    } catch (err) {
+      const mensagem =
+        err instanceof DadosInsuficientesError
+          ? err.message
+          : err instanceof ApiError
+            ? err.detail
+            : "Não foi possível calcular o resultado. Verifique se todos os campos foram preenchidos.";
+      setErro(mensagem);
+      throw err;
+    } finally {
+      setEnviando(false);
+    }
   }, [answers]);
+
+  // Carrega o histórico real do backend — substitui o array em memória.
+  // Chamar isso ao entrar na tela de Histórico (useEffect no componente).
+  const carregarHistorico = useCallback(async () => {
+    setErro(null);
+    try {
+      const avaliacoes = await api.listarAvaliacoes();
+      setHistory(avaliacoes.map(mapAvaliacaoFromApi));
+    } catch (err) {
+      const mensagem =
+        err instanceof ApiError ? err.detail : "Não foi possível carregar o histórico.";
+      setErro(mensagem);
+    }
+  }, []);
 
   const value = {
     answers,
@@ -67,6 +99,9 @@ export function AssessmentProvider({ children }) {
     result,
     submitAssessment,
     history,
+    carregarHistorico,
+    enviando,
+    erro,
   };
 
   return (
@@ -76,8 +111,6 @@ export function AssessmentProvider({ children }) {
   );
 }
 
-// Hook de acesso — lança erro se usado fora do Provider,
-// pra pegar bugs de integração cedo
 export function useAssessment() {
   const context = useContext(AssessmentContext);
   if (!context) {
