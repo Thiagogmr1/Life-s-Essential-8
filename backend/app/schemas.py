@@ -17,7 +17,7 @@ class UsuarioLogin(BaseModel):
 
 
 class UsuarioResposta(BaseModel):
-    model_config = ConfigDict(from_attributes=True)  # permite ler direto de um objeto Usuario (SQLModel)
+    model_config = ConfigDict(from_attributes=True)
 
     id: uuid.UUID
     nome: str
@@ -27,23 +27,14 @@ class UsuarioResposta(BaseModel):
 
 
 class TokenResposta(BaseModel):
-    access_token: str
+    # Sem access_token aqui — o token vai só no cookie httpOnly,
+    # nunca no corpo JSON (senão o front poderia salvar em localStorage
+    # por engano e reintroduzir o risco de XSS que o cookie evita).
     token_type: str = "bearer"
     usuario: UsuarioResposta
 
-    # adicionar em backend/app/schemas.py
 
 class AvaliacaoCriar(BaseModel):
-    score_total: int = Field(ge=0, le=100)
-    classificacao: str
-    score_dieta: int = Field(ge=0, le=100)
-    score_atividade_fisica: int = Field(ge=0, le=100)
-    score_tabagismo: int = Field(ge=0, le=100)
-    score_sono: int = Field(ge=0, le=100)
-    score_imc: int = Field(ge=0, le=100)
-    score_colesterol: int = Field(ge=0, le=100)
-    score_glicemia: int = Field(ge=0, le=100)
-    score_pressao: int = Field(ge=0, le=100)
     respostas_brutas: dict
 
 
