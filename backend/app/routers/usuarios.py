@@ -3,7 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlmodel import Session, select
 from app.database import get_session
 from app.models import Usuario
-from app.schemas import UsuarioCadastro, UsuarioLogin, TokenResposta
+from app.schemas import UsuarioCadastro, UsuarioLogin, TokenResposta, UsuarioResposta
+from app.dependencies import get_usuario_atual
 from app.auth import (
     hash_senha,
     verificar_senha,
@@ -85,3 +86,8 @@ def login(
 def logout(response: Response):
     response.delete_cookie(key=COOKIE_NAME, path="/")
     return {"detail": "Logout realizado com sucesso"}
+
+
+@router.get("/me", response_model=UsuarioResposta)
+def obter_usuario_atual(usuario_atual: Usuario = Depends(get_usuario_atual)):
+    return usuario_atual

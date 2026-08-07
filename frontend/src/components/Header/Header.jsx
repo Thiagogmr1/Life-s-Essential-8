@@ -1,8 +1,17 @@
 // src/components/Header/Header.jsx
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import "./Header.css";
 
 export default function Header() {
+  const { usuario, logout } = useAuth();
+  const navigate = useNavigate();
+
+  async function handleLogout() {
+    await logout();
+    navigate("/");
+  }
+
   return (
     <header className="app-header">
       <Link to="/" className="app-header__brand">
@@ -17,6 +26,15 @@ export default function Header() {
           <span className="app-header__subtitle">Avaliação de Saúde Cardiovascular</span>
         </span>
       </Link>
+
+      {usuario && (
+        <div className="app-header__user">
+          <span className="app-header__user-name">Olá, {usuario.nome}</span>
+          <button className="app-header__logout" onClick={handleLogout}>
+            Sair
+          </button>
+        </div>
+      )}
     </header>
   );
 }

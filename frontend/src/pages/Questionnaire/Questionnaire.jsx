@@ -1,4 +1,3 @@
-// src/pages/Questionnaire/Questionnaire.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAssessment } from "../../context/AssessmentContext";
@@ -7,17 +6,22 @@ import QuestionCard from "../../components/QuestionCard/QuestionCard";
 
 export default function Questionnaire() {
   const navigate = useNavigate();
-  const { answers, setField, setDietItem, submitAssessment } = useAssessment();
+  const { answers, setField, setDietItem, submitAssessment, enviando, erro } = useAssessment();
   const [stepIndex, setStepIndex] = useState(0);
 
   const step = QUESTIONNAIRE_STEPS[stepIndex];
   const isFirst = stepIndex === 0;
   const isLast = stepIndex === QUESTIONNAIRE_STEPS.length - 1;
 
-  const goNext = () => {
+  const goNext = async () => {
     if (isLast) {
-      submitAssessment();
-      navigate("/resultado");
+      try {
+        await submitAssessment();
+        navigate("/resultado");
+      } catch {
+        // erro já fica disponível em `erro` (do contexto) e é exibido
+        // abaixo — usuário permanece na última pergunta para tentar de novo
+      }
     } else {
       setStepIndex((i) => i + 1);
     }
@@ -26,16 +30,20 @@ export default function Questionnaire() {
   const goBack = () => setStepIndex((i) => Math.max(0, i - 1));
 
   return (
-    <QuestionCard
-      label={step.label}
-      onNext={goNext}
-      onBack={goBack}
-      isFirst={isFirst}
-      isLast={isLast}
-      isValid={isStepValid(step, answers)}
-    >
-      {renderStepInput(step, answers, setField, setDietItem)}
-    </QuestionCard>
+    <>
+      {erro && <p role="alert">{erro}</p>}
+      <QuestionCard
+        label={step.label}
+        onNext={goNext}
+        onBack={goBack}
+        isFirst={isFirst}
+        isLast={isLast}
+        isValid={isStepValid(step, answers) && !enviando}
+        nextLabel={isLast && enviando ? "Calculando..." : undefined}
+      >
+        {renderStepInput(step, answers, setField, setDietItem)}
+      </QuestionCard>
+    </>
   );
 }
 
