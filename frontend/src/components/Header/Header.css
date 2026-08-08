@@ -68,3 +68,57 @@
       font-size: 0.65rem;
     }
   }
+
+  .app-header__user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-left: auto; /* empurra o bloco para a direita, sem depender de justify-content no pai */
+  }
+  
+  .app-header__user-name {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.85);
+    white-space: nowrap;
+  }
+  
+  .app-header__logout {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.8rem;
+    color: var(--surface);
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius);
+    padding: 0.4rem 0.9rem;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  
+  .app-header__logout:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--uni-gold);
+    color: var(--uni-gold);
+  }
+  
+  .app-header__logout:focus-visible {
+    outline: 2px solid var(--uni-sky);
+    outline-offset: 2px;
+  }
+  
+  @media (max-width: 640px) {
+    .app-header__user {
+      gap: 0.6rem;
+    }
+  
+    .app-header__user-name {
+      display: none; /* espaço curto no mobile — prioriza o botão de sair */
+    }
+  
+    .app-header__logout {
+      font-size: 0.75rem;
+      padding: 0.35rem 0.7rem;
+    }
+  }
