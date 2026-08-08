@@ -106,6 +106,79 @@
     line-height: 1.4;
   }
   
+
+  /* ─────────────────────────────
+   SUCESSO
+   ───────────────────────────── */
+
+.auth-card__success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 1.5rem 0;
+}
+
+.auth-card__success-icon {
+  width: 64px;
+  height: 64px;
+
+  margin-bottom: 1rem;
+}
+
+.auth-card__success-circle {
+  stroke: #22c55e;
+  stroke-width: 2;
+
+  stroke-dasharray: 151;
+  stroke-dashoffset: 151;
+
+  animation: draw-circle 0.8s ease-out forwards;
+}
+
+.auth-card__success-check {
+  stroke: #22c55e;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  stroke-dasharray: 34;
+  stroke-dashoffset: 34;
+
+  animation: draw-check 0.5s ease-out 0.7s forwards;
+}
+
+.auth-card__success-text {
+  margin: 0;
+
+  color: var(--uni-navy);
+
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+
+  opacity: 0;
+  animation: fade-in 0.5s ease-out 1s forwards;
+}
+
+@keyframes draw-circle {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes draw-check {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fade-in {
+  to {
+    opacity: 1;
+  }
+}
+
   
   /* ─────────────────────────────
      CAMPOS
