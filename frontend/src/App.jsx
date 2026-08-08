@@ -15,35 +15,42 @@ function App() {
     <AuthProvider>
       <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/cadastro" element={<Cadastro />} />
+  <Route path="/" element={<Login />} />
+  <Route path="/home" element={
+    <PrivateRoute>
+      <Home />
+    </PrivateRoute>
+  } />
 
-        <Route
-          path="/questionario"
-          element={
-            <PrivateRoute>
-              <Questionnaire />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/resultado"
-          element={
-            <PrivateRoute>
-              <Results />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/historico"
-          element={
-            <PrivateRoute>
-              <History />
-            </PrivateRoute>
-          }
-        />
-      </Routes>
+  <Route path="/login" element={<Login />} />
+  <Route path="/cadastro" element={<Cadastro />} />
+      <Route
+        path="/questionario"
+        element={
+          <PrivateRoute>
+            <Questionnaire />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/resultado"
+        element={
+          <PrivateRoute>
+            <Results />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/historico"
+        element={
+          <PrivateRoute>
+            <History />
+          </PrivateRoute>
+        }
+      />
+    </Routes>
     </AuthProvider>
   );
 }
