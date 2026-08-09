@@ -35,7 +35,7 @@ export default function Cadastro() {
       setSucesso(true);
 
       setTimeout(() => {
-        navigate("/questionario");
+        navigate("/home");
       }, REDIRECT_DELAY_MS);
     } catch (err) {
       const mensagem =

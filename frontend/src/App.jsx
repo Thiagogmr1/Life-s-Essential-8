@@ -9,6 +9,7 @@ import Cadastro from "./pages/Cadastro/Cadastro";
 import Questionnaire from "./pages/Questionnaire/Questionnaire";
 import Results from "./pages/Results/Results";
 import History from "./pages/History/History";
+import HistoryDetail from "./pages/HistoryDetail/HistoryDetail";
 
 function App() {
   return (
@@ -47,6 +48,15 @@ function App() {
         element={
           <PrivateRoute>
             <History />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/historico/:id"
+        element={
+          <PrivateRoute>
+            <HistoryDetail />
           </PrivateRoute>
         }
       />

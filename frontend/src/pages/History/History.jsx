@@ -1,4 +1,3 @@
-// src/pages/History/History.jsx
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAssessment } from "../../context/AssessmentContext";
@@ -40,21 +39,23 @@ export default function History() {
                 Sem .reverse() — ele inverteria para a ordem errada. */}
             {history.map((entry) => (
               <li key={entry.id} className="history-timeline__item">
-                <span
-                  className="history-timeline__dot"
-                  style={{ background: `var(--${entry.classification.colorToken})` }}
-                />
-                <div className="history-timeline__content">
-                  <span className="history-timeline__date">
-                    {new Date(entry.date).toLocaleDateString("pt-BR")}
-                  </span>
+                <Link to={`/historico/${entry.id}`} className="history-timeline__link">
                   <span
-                    className="history-timeline__score"
-                    style={{ color: `var(--${entry.classification.colorToken})` }}
-                  >
-                    {entry.compositeScore} pontos — {entry.classification.label}
-                  </span>
-                </div>
+                    className="history-timeline__dot"
+                    style={{ background: `var(--${entry.classification.colorToken})` }}
+                  />
+                  <div className="history-timeline__content">
+                    <span className="history-timeline__date">
+                      {new Date(entry.date).toLocaleDateString("pt-BR")}
+                    </span>
+                    <span
+                      className="history-timeline__score"
+                      style={{ color: `var(--${entry.classification.colorToken})` }}
+                    >
+                      {entry.compositeScore} pontos — {entry.classification.label}
+                    </span>
+                  </div>
+                </Link>
               </li>
             ))}
           </ul>
