@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useAssessment } from "../../context/AssessmentContext";
 import "./History.css";
 import { exportHistoryToExcel } from "../../utils/exportExcel";
+import { exportHistoryToPdf } from "../../utils/exportPdf";
 
 export default function History() {
   const { history, carregarHistorico, erro } = useAssessment();
@@ -19,12 +20,20 @@ export default function History() {
         {erro && <p role="alert">{erro}</p>}
 
         {history.length > 0 && (
-          <button
-            className="history-card__export"
-            onClick={() => exportHistoryToExcel(history)}
-          >
-            Exportar planilha (Excel)
-          </button>
+          <div className="history-card__export-actions">
+            <button
+              className="history-card__export"
+              onClick={() => exportHistoryToExcel(history)}
+            >
+              Exportar planilha (Excel)
+            </button>
+            <button
+              className="history-card__export"
+              onClick={() => exportHistoryToPdf(history)}
+            >
+              Exportar PDF completo
+            </button>
+          </div>
         )}
 
         {history.length === 0 ? (
