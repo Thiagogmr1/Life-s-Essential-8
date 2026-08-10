@@ -40,7 +40,8 @@
     background: var(--brand-soft);
   }
   
-  .question-card__body input[type="number"] {
+.question-card__body input[type="number"],
+  .question-card__body input[type="text"] {
     width: 100%;
     padding: 0.7rem 0.9rem;
     border: 1px solid var(--line);
