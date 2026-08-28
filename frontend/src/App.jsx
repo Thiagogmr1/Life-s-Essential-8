@@ -10,57 +10,60 @@ import Questionnaire from "./pages/Questionnaire/Questionnaire";
 import Results from "./pages/Results/Results";
 import History from "./pages/History/History";
 import HistoryDetail from "./pages/HistoryDetail/HistoryDetail";
+import "./App.css";
 
 function App() {
   return (
     <AuthProvider>
       <Header />
-      <Routes>
-  <Route path="/" element={<Login />} />
-  <Route path="/home" element={
-    <PrivateRoute>
-      <Home />
-    </PrivateRoute>
-  } />
+      <main className="app-content">
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/home" element={
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
+          } />
 
-  <Route path="/login" element={<Login />} />
-  <Route path="/cadastro" element={<Cadastro />} />
-      <Route
-        path="/questionario"
-        element={
-          <PrivateRoute>
-            <Questionnaire />
-          </PrivateRoute>
-        }
-      />
+          <Route path="/login" element={<Login />} />
+          <Route path="/cadastro" element={<Cadastro />} />
+          <Route
+            path="/questionario"
+            element={
+              <PrivateRoute>
+                <Questionnaire />
+              </PrivateRoute>
+            }
+          />
 
-      <Route
-        path="/resultado"
-        element={
-          <PrivateRoute>
-            <Results />
-          </PrivateRoute>
-        }
-      />
+          <Route
+            path="/resultado"
+            element={
+              <PrivateRoute>
+                <Results />
+              </PrivateRoute>
+            }
+          />
 
-      <Route
-        path="/historico"
-        element={
-          <PrivateRoute>
-            <History />
-          </PrivateRoute>
-        }
-      />
+          <Route
+            path="/historico"
+            element={
+              <PrivateRoute>
+                <History />
+              </PrivateRoute>
+            }
+          />
 
-      <Route
-        path="/historico/:id"
-        element={
-          <PrivateRoute>
-            <HistoryDetail />
-          </PrivateRoute>
-        }
-      />
-    </Routes>
+          <Route
+            path="/historico/:id"
+            element={
+              <PrivateRoute>
+                <HistoryDetail />
+              </PrivateRoute>
+            }
+          />
+        </Routes>
+      </main>
     </AuthProvider>
   );
 }
