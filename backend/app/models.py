@@ -1,7 +1,7 @@
 import uuid
 from enum import Enum
 from datetime import datetime, date, timezone
-from sqlmodel import SQLModel, Field, Column
+from sqlmodel import SQLModel, Field, Column, Enum as SQLEnum
 from sqlalchemy.dialects.postgresql import JSONB
 
 
@@ -16,7 +16,7 @@ class Usuario(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     nome: str
     data_nascimento: date
-    sexo: SexoEnum
+    sexo: SexoEnum = Field(sa_column=Column(SQLEnum(SexoEnum, values_callable=lambda x: [e.value for e in x])))
     estado: str = Field(max_length=2)
     cidade: str
     email: str = Field(unique=True, index=True)
