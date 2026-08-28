@@ -10,6 +10,8 @@ import Questionnaire from "./pages/Questionnaire/Questionnaire";
 import Results from "./pages/Results/Results";
 import History from "./pages/History/History";
 import HistoryDetail from "./pages/HistoryDetail/HistoryDetail";
+import AdminStatistics from "./pages/AdminStatistics/AdminStatistics";
+import AdminRoute from "./components/AdminRoute/AdminRoute";
 import "./App.css";
 
 function App() {
@@ -62,7 +64,17 @@ function App() {
               </PrivateRoute>
             }
           />
-        </Routes>
+
+          <Route
+          path="/admin/estatisticas"
+          element={
+            <AdminRoute>
+              <AdminStatistics />
+            </AdminRoute>
+          }
+        />
+
+        </Routes> 
       </main>
     </AuthProvider>
   );

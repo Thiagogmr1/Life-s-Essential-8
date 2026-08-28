@@ -3,7 +3,7 @@ from datetime import datetime, date
 from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator, computed_field
 from app.models import SexoEnum
 from typing import Optional
-
+from app.models import RoleEnum
 
 class UsuarioCadastro(BaseModel):
     nome: str
@@ -45,6 +45,7 @@ class UsuarioResposta(BaseModel):
     estado: str
     cidade: str
     email: str
+    role: RoleEnum
     criado_em: datetime
 
     @computed_field

@@ -131,18 +131,45 @@
     outline: 2px solid var(--uni-sky);
     outline-offset: 2px;
   }
+
+  .app-header__admin-link {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radius);
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: nowrap;
+}
+
+.app-header__admin-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--uni-gold);
+}
+
+.app-header__admin-link:focus-visible {
+  outline: 2px solid var(--uni-sky);
+  outline-offset: 2px;
+}
   
-  @media (max-width: 640px) {
-    .app-header__user {
-      gap: 0.6rem;
-    }
-  
-    .app-header__user-name {
-      display: none; /* espaço curto no mobile — prioriza o botão de sair */
-    }
-  
-    .app-header__logout {
-      font-size: 0.75rem;
-      padding: 0.35rem 0.7rem;
-    }
+@media (max-width: 640px) {
+  .app-header__admin-link {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.6rem;
   }
+
+  .app-header__user {
+    gap: 0.6rem;
+  }
+
+  .app-header__user-name {
+    display: none; /* espaço curto no mobile — prioriza o botão de sair */
+  }
+
+  .app-header__logout {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.7rem;
+  }
+}
