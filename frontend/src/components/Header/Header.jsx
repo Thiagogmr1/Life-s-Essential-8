@@ -22,8 +22,8 @@ export default function Header() {
         />
         <span className="app-header__divider" aria-hidden="true" />
         <span className="app-header__title">
-          Life&apos;s Essential 8
-          <span className="app-header__subtitle">Avaliação de Saúde Cardiovascular</span>
+          LESaC
+          <span className="app-header__subtitle">Laboratório de Estudos em Saúde Cardiorrespiratória e Metabólica</span>
         </span>
       </Link>
 

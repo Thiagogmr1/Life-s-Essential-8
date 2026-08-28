@@ -1,8 +1,83 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAssessment } from "../../context/AssessmentContext";
 import { QUESTIONNAIRE_STEPS } from "../../data/questionnaireSteps";
 import QuestionCard from "../../components/QuestionCard/QuestionCard";
+
+// Input de número decimal controlado por texto local, em vez de
+// depender do `value` numérico vindo de fora. Isso evita o bug do
+// "volta pra zero ao apagar", já que o campo nunca é re-derivado de
+// Number(""). Aceita vírgula (padrão BR) e converte pra ponto só na
+// hora de repassar o valor numérico pro setField.
+function DecimalField({ value, onChange, placeholder, autoComma = false, maxDecimals = 2 }) {
+  const toDisplayString = (v) => (v === null || v === undefined || v === "" ? "" : String(v).replace(".", ","));
+
+  const [text, setText] = useState(() => toDisplayString(value));
+
+  // Sincroniza se o valor externo mudar por fora do input
+  // (ex: resetAnswers ao clicar em "Nova avaliação").
+  useEffect(() => {
+    setText(toDisplayString(value));
+  }, [value]);
+
+  function handleChange(e) {
+    let raw = e.target.value;
+
+    // mantém só dígitos e vírgula
+    raw = raw.replace(/[^\d,]/g, "");
+
+    // permite no máximo uma vírgula
+    const firstComma = raw.indexOf(",");
+    if (firstComma !== -1) {
+      raw = raw.slice(0, firstComma + 1) + raw.slice(firstComma + 1).replace(/,/g, "");
+    }
+
+    if (autoComma) {
+      // insere a vírgula automaticamente após o primeiro dígito
+      const digitsOnly = raw.replace(",", "");
+      if (digitsOnly.length <= 1) {
+        raw = digitsOnly;
+      } else {
+        const intPart = digitsOnly.slice(0, 1);
+        const decPart = digitsOnly.slice(1, 1 + maxDecimals);
+        raw = `${intPart},${decPart}`;
+      }
+    } else if (firstComma !== -1) {
+      // sem auto-vírgula, mas ainda limita casas decimais
+      const [intPart, decPart = ""] = raw.split(",");
+      raw = `${intPart},${decPart.slice(0, maxDecimals)}`;
+    }
+
+    setText(raw);
+
+    if (raw === "" || raw === ",") {
+      onChange(null);
+      return;
+    }
+
+    const numeric = parseFloat(raw.replace(",", "."));
+    onChange(Number.isNaN(numeric) ? null : numeric);
+  }
+
+  return (
+    <input
+      type="text"
+      inputMode="decimal"
+      placeholder={placeholder}
+      value={text}
+      onChange={handleChange}
+    />
+  );
+}
+
+// Handler compartilhado para os inputs type="number" que continuam
+// inteiros (colesterol, glicemia de jejum, sistólica, diastólica,
+// e os do tipo genérico "number"). Único ajuste: campo vazio vira
+// null, nunca 0 — resolve o bug de "não consigo apagar o último dígito".
+function handleIntegerChange(e, field, setField) {
+  const raw = e.target.value;
+  setField(field, raw === "" ? null : Number(raw));
+}
 
 export default function Questionnaire() {
   const navigate = useNavigate();
@@ -102,7 +177,7 @@ function renderStepInput(step, answers, setField, setDietItem) {
             step={step.step ?? 1}
             placeholder={step.placeholder}
             value={answers[step.field] ?? ""}
-            onChange={(e) => setField(step.field, e.target.value === "" ? "" : Number(e.target.value))}
+            onChange={(e) => handleIntegerChange(e, step.field, setField)}
           />
           <span> {step.unit}</span>
         </div>
@@ -130,20 +205,19 @@ function renderStepInput(step, answers, setField, setDietItem) {
         <div>
           <label>
             Peso (kg)
-            <input
-              type="number"
-              value={answers.weightKg ?? ""}
-              onChange={(e) => setField("weightKg", Number(e.target.value))}
+            <DecimalField
+              value={answers.weightKg}
+              onChange={(v) => setField("weightKg", v)}
+              placeholder="Ex: 75,5"
             />
           </label>
           <label>
             Altura (m)
-            <input
-              type="number"
-              step="0.01"
-              placeholder="Ex: 1.75"
-              value={answers.heightM ?? ""}
-              onChange={(e) => setField("heightM", Number(e.target.value))}
+            <DecimalField
+              value={answers.heightM}
+              onChange={(v) => setField("heightM", v)}
+              placeholder="Ex: 1,75"
+              autoComma
             />
           </label>
         </div>
@@ -157,7 +231,7 @@ function renderStepInput(step, answers, setField, setDietItem) {
             <input
               type="number"
               value={answers.nonHdlCholesterol ?? ""}
-              onChange={(e) => setField("nonHdlCholesterol", Number(e.target.value))}
+              onChange={(e) => handleIntegerChange(e, "nonHdlCholesterol", setField)}
             />
           </label>
           <label>
@@ -179,17 +253,17 @@ function renderStepInput(step, answers, setField, setDietItem) {
             <input
               type="number"
               value={answers.fastingGlucose ?? ""}
-              onChange={(e) => setField("fastingGlucose", Number(e.target.value))}
+              onChange={(e) => handleIntegerChange(e, "fastingGlucose", setField)}
             />
           </label>
           <p>ou</p>
           <label>
             Hemoglobina glicada — HbA1c (%)
-            <input
-              type="number"
-              step="0.1"
-              value={answers.hba1c ?? ""}
-              onChange={(e) => setField("hba1c", Number(e.target.value))}
+            <DecimalField
+              value={answers.hba1c}
+              onChange={(v) => setField("hba1c", v)}
+              placeholder="Ex: 5,4"
+              maxDecimals={1}
             />
           </label>
           <label>
@@ -211,7 +285,7 @@ function renderStepInput(step, answers, setField, setDietItem) {
             <input
               type="number"
               value={answers.systolic ?? ""}
-              onChange={(e) => setField("systolic", Number(e.target.value))}
+              onChange={(e) => handleIntegerChange(e, "systolic", setField)}
             />
           </label>
           <label>
@@ -219,7 +293,7 @@ function renderStepInput(step, answers, setField, setDietItem) {
             <input
               type="number"
               value={answers.diastolic ?? ""}
-              onChange={(e) => setField("diastolic", Number(e.target.value))}
+              onChange={(e) => handleIntegerChange(e, "diastolic", setField)}
             />
           </label>
         </div>
