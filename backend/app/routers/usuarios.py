@@ -47,7 +47,10 @@ def cadastrar(
 
     usuario = Usuario(
         nome=dados.nome,
-        idade=dados.idade,
+        data_nascimento=dados.data_nascimento,
+        sexo=dados.sexo,
+        estado=dados.estado,
+        cidade=dados.cidade,
         email=dados.email,
         senha_hash=hash_senha(dados.senha),
     )
