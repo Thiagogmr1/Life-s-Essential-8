@@ -129,17 +129,17 @@ function dataBrEhValida(dataBr) {
   const iso = dataBrParaIso(dataBr);
   if (!iso) return false;
 
-  const data = new Date(iso);
   const [ano, mes, dia] = iso.split("-").map(Number);
 
-  // valida que a data existe de verdade (ex: rejeita 31/02)
-  const dataValida =
-    data.getFullYear() === ano &&
-    data.getMonth() + 1 === mes &&
-    data.getDate() === dia;
+  if (mes < 1 || mes > 12) return false;
 
-  if (!dataValida) return false;
-  if (data >= new Date()) return false; // não pode ser no futuro
+  const diasNoMes = new Date(ano, mes, 0).getDate(); // último dia do mês (esse uso é seguro, sem strings ISO)
+  if (dia < 1 || dia > diasNoMes) return false;
+
+  const hoje = new Date();
+  const dataDigitada = new Date(ano, mes - 1, dia); // construtor com números = usa horário local, sem bug de fuso
+
+  if (dataDigitada > hoje) return false; // não pode ser no futuro
 
   return true;
 }
