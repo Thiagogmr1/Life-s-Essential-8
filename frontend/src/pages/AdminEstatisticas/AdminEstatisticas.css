@@ -1,0 +1,407 @@
+/* src/pages/AdminEstatisticas/AdminEstatisticas.css */
+
+/* ─────────────────────────────
+   PÁGINA
+   ───────────────────────────── */
+
+.admin-page {
+  min-height: calc(100vh - var(--header-height));
+  width: 100%;
+
+  padding: 2rem;
+
+  background: var(--paper);
+}
+
+.admin-page__title {
+  margin: 0 0 1.75rem;
+
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 700;
+
+  color: var(--uni-navy);
+}
+
+.admin-page__subtitle {
+  margin: 0 0 1.1rem;
+
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+
+  color: var(--uni-navy);
+}
+
+.admin-page__status {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.admin-page__error {
+  padding: 0.7rem 0.9rem;
+
+  background: rgba(196, 32, 47, 0.08);
+  color: var(--uni-red);
+
+  border: 1px solid rgba(196, 32, 47, 0.25);
+  border-radius: var(--radius);
+
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+
+/* ─────────────────────────────
+   RESUMO — CARDS
+   ───────────────────────────── */
+
+.admin-summary {
+  margin-bottom: 2.5rem;
+}
+
+.admin-summary__cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+
+  margin-bottom: 1.5rem;
+}
+
+.admin-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  padding: 1.25rem 1.5rem;
+
+  background: var(--surface);
+
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow-card);
+}
+
+.admin-card__label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.admin-card__value {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--uni-navy);
+}
+
+
+/* ─────────────────────────────
+   RESUMO — PAINÉIS DETALHADOS
+   ───────────────────────────── */
+
+.admin-summary__details {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.admin-panel {
+  padding: 1.25rem 1.5rem;
+
+  background: var(--surface);
+
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow-card);
+}
+
+.admin-panel__title {
+  margin: 0 0 0.9rem;
+
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+
+  color: var(--uni-navy);
+}
+
+.admin-panel__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.admin-panel__list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  font-size: 0.85rem;
+  color: var(--ink);
+
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-panel__list li:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.admin-panel__list strong {
+  color: var(--uni-navy);
+  font-weight: 700;
+}
+
+
+/* ─────────────────────────────
+   FILTROS
+   ───────────────────────────── */
+
+.admin-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 1rem;
+
+  margin-bottom: 1.5rem;
+
+  padding: 1.25rem 1.5rem;
+
+  background: var(--surface);
+
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.admin-filters__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  min-width: 120px;
+}
+
+.admin-filters__field label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.admin-filters__field input,
+.admin-filters__field select {
+  box-sizing: border-box;
+
+  height: 38px;
+
+  padding: 0.55rem 0.7rem;
+
+  background: var(--surface);
+  color: var(--ink);
+
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-filters__field select {
+  cursor: pointer;
+  appearance: none;
+
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%239aa3b7'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.6rem center;
+  background-size: 14px;
+
+  padding-right: 2rem;
+}
+
+.admin-filters__field input:hover,
+.admin-filters__field select:hover {
+  border-color: #c4ccda;
+}
+
+.admin-filters__field input:focus,
+.admin-filters__field select:focus {
+  outline: none;
+
+  border-color: var(--uni-sky);
+  box-shadow: 0 0 0 3px rgba(45, 169, 224, 0.08);
+}
+
+.admin-filters__limpar {
+  height: 38px;
+
+  padding: 0 1rem;
+
+  background: transparent;
+  color: var(--uni-navy);
+
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.admin-filters__limpar:hover {
+  background: var(--paper);
+  border-color: #c4ccda;
+}
+
+
+/* ─────────────────────────────
+   TABELA
+   ───────────────────────────── */
+
+.admin-table__wrapper {
+  width: 100%;
+  overflow-x: auto;
+
+  background: var(--surface);
+
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow-card);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  font-size: 0.85rem;
+}
+
+.admin-table thead th {
+  white-space: nowrap;
+  text-align: left;
+
+  padding: 0.85rem 1rem;
+
+  background: var(--paper);
+  color: var(--ink-soft);
+
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-table tbody td {
+  padding: 0.85rem 1rem;
+
+  color: var(--ink);
+
+  border-bottom: 1px solid var(--line);
+
+  white-space: nowrap;
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tbody tr:hover {
+  background: var(--paper);
+}
+
+.admin-table__vazio {
+  text-align: center;
+  color: var(--ink-soft);
+  padding: 2rem 1rem;
+}
+
+
+/* ─────────────────────────────
+   PAGINAÇÃO
+   ───────────────────────────── */
+
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+
+  margin-top: 1.25rem;
+
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+.admin-pagination button {
+  padding: 0.5rem 1rem;
+
+  background: var(--surface);
+  color: var(--uni-navy);
+
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.admin-pagination button:hover:not(:disabled) {
+  background: var(--paper);
+  border-color: #c4ccda;
+}
+
+.admin-pagination button:disabled {
+  color: var(--line);
+  cursor: not-allowed;
+}
+
+
+/* ─────────────────────────────
+   RESPONSIVO
+   ───────────────────────────── */
+
+@media (max-width: 900px) {
+  .admin-summary__cards,
+  .admin-summary__details {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-page {
+    padding: 1.25rem;
+  }
+
+  .admin-page__title {
+    font-size: 1.4rem;
+  }
+
+  .admin-filters {
+    padding: 1rem;
+  }
+
+  .admin-filters__field {
+    min-width: 100px;
+    flex: 1 1 45%;
+  }
+}

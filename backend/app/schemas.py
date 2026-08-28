@@ -1,9 +1,9 @@
 import uuid
 from datetime import datetime, date
 from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator, computed_field
-from app.models import SexoEnum
+from app.models import SexoEnum, RoleEnum
 from typing import Optional
-from app.models import RoleEnum
+
 
 class UsuarioCadastro(BaseModel):
     nome: str

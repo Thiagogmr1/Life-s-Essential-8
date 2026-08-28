@@ -10,7 +10,7 @@ import Questionnaire from "./pages/Questionnaire/Questionnaire";
 import Results from "./pages/Results/Results";
 import History from "./pages/History/History";
 import HistoryDetail from "./pages/HistoryDetail/HistoryDetail";
-import AdminStatistics from "./pages/AdminStatistics/AdminStatistics";
+import AdminEstatisticas from "./pages/AdminEstatisticas/AdminEstatisticas";
 import AdminRoute from "./components/AdminRoute/AdminRoute";
 import "./App.css";
 
@@ -69,7 +69,7 @@ function App() {
           path="/admin/estatisticas"
           element={
             <AdminRoute>
-              <AdminStatistics />
+              <AdminEstatisticas />
             </AdminRoute>
           }
         />
