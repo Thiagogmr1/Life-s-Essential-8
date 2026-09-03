@@ -3,7 +3,7 @@ import uuid
 from fastapi import Depends, HTTPException, Request
 from sqlmodel import Session
 from app.database import get_session
-from app.models import Usuario
+from app.models import Usuario, RoleEnum
 from app.auth import decodificar_token, COOKIE_NAME
 
 
@@ -28,5 +28,14 @@ def get_usuario_atual(
     usuario = session.get(Usuario, usuario_uuid)
     if not usuario:
         raise HTTPException(status_code=401, detail="Usuário não encontrado")
+
+    return usuario
+
+
+def get_usuario_admin(
+    usuario: Usuario = Depends(get_usuario_atual),
+) -> Usuario:
+    if usuario.role != RoleEnum.ADMIN:
+        raise HTTPException(status_code=403, detail="Acesso restrito a administradores")
 
     return usuario

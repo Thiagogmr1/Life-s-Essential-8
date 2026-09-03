@@ -63,6 +63,19 @@ export const api = {
       }),
   
     listarAvaliacoes: () => request("/avaliacoes"),
+
+    obterEstatisticasResumo: () => request("/admin/estatisticas/resumo"),
+
+    listarUsuariosAdmin: (filtros = {}) => {
+      const params = new URLSearchParams();
+      Object.entries(filtros).forEach(([chave, valor]) => {
+        if (valor !== "" && valor !== null && valor !== undefined) {
+          params.append(chave, valor);
+        }
+      });
+      const query = params.toString();
+      return request(`/admin/estatisticas/usuarios${query ? `?${query}` : ""}`);
+    },
   };
 
   export { ApiError };

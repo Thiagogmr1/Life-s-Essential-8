@@ -53,7 +53,7 @@ export default function Login() {
     </span>
 
     <h1 className="auth-card__title">
-      Entrar
+      LESaC
     </h1>
 
     {/* <p className="auth-card__description">

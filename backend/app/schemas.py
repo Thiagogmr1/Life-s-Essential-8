@@ -1,7 +1,8 @@
 import uuid
 from datetime import datetime, date
 from pydantic import BaseModel, EmailStr, Field, ConfigDict, field_validator, computed_field
-from app.models import SexoEnum
+from app.models import SexoEnum, RoleEnum
+from typing import Optional
 
 
 class UsuarioCadastro(BaseModel):
@@ -44,6 +45,7 @@ class UsuarioResposta(BaseModel):
     estado: str
     cidade: str
     email: str
+    role: RoleEnum
     criado_em: datetime
 
     @computed_field
@@ -84,3 +86,56 @@ class AvaliacaoResposta(BaseModel):
     score_glicemia: int
     score_pressao: int
     respostas_brutas: dict
+
+
+class UsuarioListaAdmin(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    nome: str
+    sexo: SexoEnum
+    estado: str
+    cidade: str
+    email: str
+    total_avaliacoes: int
+    ultimo_score: Optional[int] = None
+    ultima_classificacao: Optional[str] = None
+
+    @computed_field
+    @property
+    def idade(self) -> int:
+        # reaproveita o mesmo cálculo do UsuarioResposta
+        hoje = date.today()
+        idade = hoje.year - self.data_nascimento.year
+        if (hoje.month, hoje.day) < (self.data_nascimento.month, self.data_nascimento.day):
+            idade -= 1
+        return idade
+
+    data_nascimento: date  # necessário para o computed_field acima; incluído na resposta também
+
+
+class ListaUsuariosAdminResposta(BaseModel):
+    total: int
+    pagina: int
+    limite: int
+    usuarios: list[UsuarioListaAdmin]
+
+
+class DistribuicaoClassificacao(BaseModel):
+    classificacao: str
+    quantidade: int
+
+
+class MediaPorSexo(BaseModel):
+    sexo: SexoEnum
+    score_medio: float
+    quantidade: int
+
+
+class EstatisticasResumoResposta(BaseModel):
+    total_usuarios: int
+    total_avaliacoes: int
+    score_medio_geral: Optional[float]
+    media_por_dominio: dict[str, float]
+    distribuicao_classificacao: list[DistribuicaoClassificacao]
+    media_por_sexo: list[MediaPorSexo]

@@ -29,6 +29,11 @@ export default function Header() {
 
       {usuario && (
         <div className="app-header__user">
+          {usuario.role === "admin" && (
+            <Link to="/admin/estatisticas" className="app-header__admin-link">
+              Estatísticas
+            </Link>
+          )}
           <span className="app-header__user-name">Olá, {usuario.nome}</span>
           <button className="app-header__logout" onClick={handleLogout}>
             Sair
