@@ -36,7 +36,12 @@ export default function HistoryDetail() {
       <div className="results-page">
         <div className="results-card">
           <p role="alert">{erro}</p>
-          <Link to="/historico">Voltar ao histórico</Link>
+          <Link
+            to="/historico"
+            className="results-card__btn results-card__btn--primary"
+          >
+            Voltar ao histórico
+          </Link>
         </div>
       </div>
     );
@@ -47,7 +52,12 @@ export default function HistoryDetail() {
       <div className="results-page">
         <div className="results-card">
           <p>Avaliação não encontrada.</p>
-          <Link to="/historico">Voltar ao histórico</Link>
+          <Link
+            to="/historico"
+            className="results-card__btn results-card__btn--primary"
+          >
+            Voltar ao histórico
+          </Link>
         </div>
       </div>
     );
@@ -59,12 +69,48 @@ export default function HistoryDetail() {
         result={entry}
         actions={
           <>
-            <button className="results-card__secondary" onClick={() => exportResultToPdf(entry)}>
-              Exportar PDF
-            </button>
-            <Link to="/historico" className="results-card__primary">
-              Voltar ao histórico
+            <Link
+              to="/historico"
+              className="results-card__btn results-card__btn--secondary"
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+              <span>Voltar ao histórico</span>
             </Link>
+
+            <button
+              type="button"
+              className="results-card__btn results-card__btn--pdf"
+              onClick={() => exportResultToPdf(entry)}
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              <span>Exportar PDF</span>
+            </button>
           </>
         }
       />
