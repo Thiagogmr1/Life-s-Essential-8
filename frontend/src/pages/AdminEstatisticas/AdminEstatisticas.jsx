@@ -2,6 +2,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { api, ApiError } from "../../utils/api";
 import "./AdminEstatisticas.css";
+import { exportUsuariosAdminToExcel } from "../../utils/exportAdminExcel";
+import { exportEstatisticasToPdf } from "../../utils/exportAdminPdf";
 
 const LIMITE_PAGINA = 20;
 
@@ -32,6 +34,9 @@ export default function AdminEstatisticas() {
   const [pagina, setPagina] = useState(1);
   const [carregandoUsuarios, setCarregandoUsuarios] = useState(true);
   const [erroUsuarios, setErroUsuarios] = useState(null);
+
+  const [exportandoExcel, setExportandoExcel] = useState(false);
+  const [exportandoPdf, setExportandoPdf] = useState(false);
 
   const [filtros, setFiltros] = useState({
     sexo: "",
@@ -94,6 +99,52 @@ export default function AdminEstatisticas() {
   }
 
   const totalPaginas = Math.max(1, Math.ceil(totalUsuarios / LIMITE_PAGINA));
+
+  async function buscarTodosUsuariosFiltrados() {
+    const primeiraPagina = await api.listarUsuariosAdmin({
+      ...filtros,
+      pagina: 1,
+      limite: 100,
+    });
+
+    let todos = [...primeiraPagina.usuarios];
+    const totalPaginasBusca = Math.ceil(primeiraPagina.total / 100);
+
+    for (let paginaAtual = 2; paginaAtual <= totalPaginasBusca; paginaAtual++) {
+      const proxima = await api.listarUsuariosAdmin({
+        ...filtros,
+        pagina: paginaAtual,
+        limite: 100,
+      });
+      todos = todos.concat(proxima.usuarios);
+    }
+
+    return todos;
+  }
+
+async function handleExportarExcel() {
+  setExportandoExcel(true);
+  try {
+    const todosUsuarios = await buscarTodosUsuariosFiltrados();
+    exportUsuariosAdminToExcel(todosUsuarios);
+  } catch (err) {
+    alert("Erro ao exportar: " + (err instanceof ApiError ? err.detail : "tente novamente"));
+  } finally {
+    setExportandoExcel(false);
+  }
+}
+
+async function handleExportarPdf() {
+  setExportandoPdf(true);
+  try {
+    const todosUsuarios = await buscarTodosUsuariosFiltrados();
+    exportEstatisticasToPdf(resumo, todosUsuarios);
+  } catch (err) {
+    alert("Erro ao exportar: " + (err instanceof ApiError ? err.detail : "tente novamente"));
+  } finally {
+    setExportandoPdf(false);
+  }
+}
 
   return (
     <div className="admin-page">
@@ -241,6 +292,27 @@ export default function AdminEstatisticas() {
           >
             Limpar filtros
           </button>
+
+          <div className="admin-export-group">
+            <button
+              type="button"
+              className="admin-export__button admin-export__button--excel"
+              onClick={handleExportarExcel}
+              disabled={exportandoExcel || usuarios.length === 0}
+            >
+              {exportandoExcel ? "Exportando..." : "Exportar Excel"}
+            </button>
+
+            <button
+              type="button"
+              className="admin-export__button admin-export__button--pdf"
+              onClick={handleExportarPdf}
+              disabled={exportandoPdf || !resumo || usuarios.length === 0}
+            >
+              {exportandoPdf ? "Exportando..." : "Exportar PDF"}
+            </button>
+          </div>
+
         </div>
 
         {carregandoUsuarios && <p className="admin-page__status">Carregando usuários...</p>}

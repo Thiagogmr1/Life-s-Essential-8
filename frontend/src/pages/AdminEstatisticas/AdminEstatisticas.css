@@ -375,6 +375,77 @@
   cursor: not-allowed;
 }
 
+.admin-export {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.admin-export__button {
+  height: 38px;
+  padding: 0 1.1rem;
+  color: #ffffff;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.admin-export-group {
+  display: flex;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+
+/* =========================
+   EXCEL
+   ========================= */
+
+.admin-export__button--excel {
+  background: #217346;
+  border-color: #217346;
+}
+
+.admin-export__button--excel:hover:not(:disabled) {
+  background: #ffffff;
+  color: #217346;
+  border-color: #217346;
+  transform: translateY(-1px);
+}
+
+/* =========================
+   PDF
+   ========================= */
+
+.admin-export__button--pdf {
+  background: #b4232c;
+  border-color: #b4232c;
+}
+
+.admin-export__button--pdf:hover:not(:disabled) {
+  background: #ffffff;
+  color: #b4232c;
+  border-color: #b4232c;
+  transform: translateY(-1px);
+}
+
+/* =========================
+   DESABILITADO
+   ========================= */
+
+.admin-export__button:disabled {
+  background: var(--line);
+  color: var(--ink-soft);
+  border-color: transparent;
+  cursor: not-allowed;
+}
 
 /* ─────────────────────────────
    RESPONSIVO
