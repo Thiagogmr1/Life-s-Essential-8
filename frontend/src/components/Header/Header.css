@@ -89,7 +89,7 @@
     }
   
     .app-header__subtitle {
-      font-size: 0.65rem;
+      display: none;
     }
   }
 
