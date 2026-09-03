@@ -164,7 +164,7 @@ async function handleExportarPdf() {
           >
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
-          <span>Voltar para a Home</span>
+          <span>Voltar</span>
         </Link>
         <h1 className="admin-page__title">Estatísticas do sistema</h1>
       </div>

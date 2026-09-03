@@ -9,12 +9,12 @@ export default function Header() {
 
   async function handleLogout() {
     await logout();
-    navigate("/");
+    navigate("/login");
   }
 
   return (
     <header className="app-header">
-      <Link to="/" className="app-header__brand">
+      <Link to={usuario ? "/home" : "/login"} className="app-header__brand">
         <img
           src="/assets/logo-unievangelica.png"
           alt="UniEVANGÉLICA — Universidade Evangélica de Goiás"

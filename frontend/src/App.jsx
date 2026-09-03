@@ -2,6 +2,7 @@
 import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
+import PublicRoute from "./components/PublicRoute/PublicRoute";
 import Header from "./components/Header/Header";
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
@@ -20,15 +21,39 @@ function App() {
       <Header />
       <main className="app-content">
         <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/home" element={
-            <PrivateRoute>
-              <Home />
-            </PrivateRoute>
-          } />
+          <Route
+            path="/"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/home"
+            element={
+              <PrivateRoute>
+                <Home />
+              </PrivateRoute>
+            }
+          />
 
-          <Route path="/login" element={<Login />} />
-          <Route path="/cadastro" element={<Cadastro />} />
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/cadastro"
+            element={
+              <PublicRoute>
+                <Cadastro />
+              </PublicRoute>
+            }
+          />
           <Route
             path="/questionario"
             element={
