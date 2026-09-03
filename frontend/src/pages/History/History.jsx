@@ -21,12 +21,12 @@ export default function History() {
 
         {history.length > 0 && (
           <div className="history-card__export-actions">
-            <button
+            {/* <button
               className="history-card__export"
               onClick={() => exportHistoryToExcel(history)}
             >
               Exportar planilha (Excel)
-            </button>
+            </button> */}
             <button
               className="history-card__export"
               onClick={() => exportHistoryToPdf(history)}
