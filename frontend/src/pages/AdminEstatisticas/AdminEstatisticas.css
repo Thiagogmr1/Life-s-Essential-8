@@ -13,8 +13,54 @@
   background: var(--paper);
 }
 
+.admin-page__header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+
+  margin-bottom: 1.75rem;
+}
+
+.admin-page__back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  padding: 0.45rem 0.85rem;
+
+  background: var(--surface);
+  color: var(--ink-soft);
+  text-decoration: none;
+
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  transition: all 0.15s ease;
+}
+
+.admin-page__back-button:hover {
+  color: var(--uni-navy);
+  border-color: #c4ccda;
+  background: var(--surface);
+  box-shadow: 0 2px 4px rgba(14, 24, 48, 0.05);
+  transform: translateX(-2px);
+}
+
+.admin-page__back-button svg {
+  transition: transform 0.15s ease;
+}
+
+.admin-page__back-button:hover svg {
+  transform: translateX(-2px);
+}
+
 .admin-page__title {
-  margin: 0 0 1.75rem;
+  margin: 0;
 
   font-family: var(--font-display);
   font-size: 1.6rem;

@@ -96,7 +96,7 @@
   .app-header__user {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.5rem;
     margin-left: auto; /* empurra o bloco para a direita, sem depender de justify-content no pai */
   }
   
@@ -132,11 +132,11 @@
     outline-offset: 2px;
   }
 
-  .app-header__admin-link {
+.app-header__admin-link {
   font-family: var(--font-body);
   font-weight: 500;
   font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.85);
+  color: #93c5fd;
   text-decoration: none;
   padding: 0.4rem 0.9rem;
   border-radius: var(--radius);
@@ -145,8 +145,8 @@
 }
 
 .app-header__admin-link:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--uni-gold);
+  background: #ffffff;
+  color: #1d4ed8;
 }
 
 .app-header__admin-link:focus-visible {
