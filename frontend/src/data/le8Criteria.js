@@ -35,24 +35,24 @@ export const CATEGORIES = {
   ];
   
   // ---- Dieta: itens do proxy (cada um vale 0, 1 ou 2 pontos) ----
-  export const DIET_ITEMS = [
-    { id: "fruitsVeggies", label: "Quantas porções de frutas e vegetais você consome por dia?",
-      options: [{ value: 0, points: 0, label: "0-1" }, { value: 1, points: 1, label: "2-3" }, { value: 2, points: 2, label: "4 ou mais" }] },
-    { id: "wholeGrains", label: "Com que frequência você consome grãos integrais (aveia, arroz integral, pão integral)?",
-      options: [{ value: 0, points: 0, label: "Raramente" }, { value: 1, points: 1, label: "Algumas vezes por semana" }, { value: 2, points: 2, label: "Diariamente" }] },
-    { id: "fish", label: "Com que frequência você consome peixe?",
-      options: [{ value: 0, points: 0, label: "Quase nunca" }, { value: 1, points: 1, label: "1x por semana" }, { value: 2, points: 2, label: "2x ou mais por semana" }] },
-    { id: "sodium", label: "Você costuma adicionar sal extra às refeições ou consumir alimentos ultraprocessados?",
-      options: [{ value: 0, points: 0, label: "Frequentemente" }, { value: 1, points: 1, label: "Às vezes" }, { value: 2, points: 2, label: "Raramente" }] },
-    { id: "sugaryDrinks", label: "Com que frequência você consome bebidas açucaradas (refrigerante, suco industrializado)?",
-      options: [{ value: 0, points: 0, label: "Diariamente" }, { value: 1, points: 1, label: "Algumas vezes por semana" }, { value: 2, points: 2, label: "Raramente ou nunca" }] },
-    { id: "redMeat", label: "Com que frequência você consome carne vermelha ou processada (embutidos)?",
-      options: [{ value: 0, points: 0, label: "Diariamente" }, { value: 1, points: 1, label: "Algumas vezes por semana" }, { value: 2, points: 2, label: "Raramente" }] },
-    { id: "nutsLegumes", label: "Com que frequência você consome castanhas, nozes ou leguminosas (feijão, lentilha, grão de bico)?",
-      options: [{ value: 0, points: 0, label: "Raramente" }, { value: 1, points: 1, label: "Algumas vezes por semana" }, { value: 2, points: 2, label: "Diariamente ou quase" }] },
-    { id: "fatType", label: "Que tipo de gordura você mais usa para cozinhar?",
-      options: [{ value: 0, points: 0, label: "Manteiga / banha / gordura animal" }, { value: 1, points: 1, label: "Óleo vegetal comum" }, { value: 2, points: 2, label: "Azeite de oliva" }] },
-  ];
+export const DIET_ITEMS = [
+  { id: "fruitsVeggies", label: "Quantas porções de frutas e vegetais você consome por dia?",
+    options: [{ value: 2, points: 2, label: "4 ou mais" }, { value: 1, points: 1, label: "2-3" }, { value: 0, points: 0, label: "0-1" }] },
+  { id: "wholeGrains", label: "Com que frequência você consome grãos integrais (aveia, arroz integral, pão integral)?",
+    options: [{ value: 2, points: 2, label: "Diariamente" }, { value: 1, points: 1, label: "Algumas vezes por semana" }, { value: 0, points: 0, label: "Raramente" }] },
+  { id: "fish", label: "Com que frequência você consome peixe?",
+    options: [{ value: 2, points: 2, label: "2x ou mais por semana" }, { value: 1, points: 1, label: "1x por semana" }, { value: 0, points: 0, label: "Quase nunca" }] },
+  { id: "sodium", label: "Você costuma adicionar sal extra às refeições ou consumir alimentos ultraprocessados?",
+    options: [{ value: 2, points: 2, label: "Raramente" }, { value: 1, points: 1, label: "Às vezes" }, { value: 0, points: 0, label: "Frequentemente" }] },
+  { id: "sugaryDrinks", label: "Com que frequência você consome bebidas açucaradas (refrigerante, suco industrializado)?",
+    options: [{ value: 2, points: 2, label: "Raramente ou nunca" }, { value: 1, points: 1, label: "Algumas vezes por semana" }, { value: 0, points: 0, label: "Diariamente" }] },
+  { id: "redMeat", label: "Com que frequência você consome carne vermelha ou processada (embutidos)?",
+    options: [{ value: 2, points: 2, label: "Raramente" }, { value: 1, points: 1, label: "Algumas vezes por semana" }, { value: 0, points: 0, label: "Diariamente" }] },
+  { id: "nutsLegumes", label: "Com que frequência você consome castanhas, nozes ou leguminosas (feijão, lentilha, grão de bico)?",
+    options: [{ value: 2, points: 2, label: "Quase todos os dias" }, { value: 1, points: 1, label: "Algumas vezes por semana" }, { value: 0, points: 0, label: "Raramente" }] },
+  { id: "fatType", label: "Que tipo de gordura você mais usa para cozinhar?",
+    options: [{ value: 2, points: 2, label: "Azeite de oliva" }, { value: 1, points: 1, label: "Óleo vegetal comum" }, { value: 0, points: 0, label: "Manteiga / banha / gordura animal" }] },
+];
   // Soma máxima possível: 16 pontos (8 itens x 2)
   
   export const DIET_SCORE_THRESHOLDS = [
