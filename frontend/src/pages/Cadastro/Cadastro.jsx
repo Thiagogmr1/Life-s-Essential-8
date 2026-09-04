@@ -29,7 +29,7 @@ export default function Cadastro() {
 
   const [confirmarSenha, setConfirmarSenha] = useState("");
 
-  const { cadastrar } = useAuth();
+  const { cadastrar, setEmTransicaoCadastro } = useAuth();
   const navigate = useNavigate();
 
   // Carrega a lista de estados uma vez, ao montar o componente
@@ -73,7 +73,7 @@ export default function Cadastro() {
     carregarCidades();
   }, [estado]);
 
-  async function handleSubmit(e) {
+async function handleSubmit(e) {
     e.preventDefault();
     setErro(null);
 
@@ -90,6 +90,8 @@ export default function Cadastro() {
     setEnviando(true);
 
     try {
+      setEmTransicaoCadastro(true); // avisa o porteiro: "segura aí"
+
       await cadastrar({
         nome,
         data_nascimento: dataBrParaIso(dataNascimento),
@@ -101,11 +103,14 @@ export default function Cadastro() {
       });
 
       setSucesso(true);
+      setEnviando(false);
 
       setTimeout(() => {
+        setEmTransicaoCadastro(false); // libera o porteiro
         navigate("/home");
       }, REDIRECT_DELAY_MS);
     } catch (err) {
+      setEmTransicaoCadastro(false); // libera também se der erro
       const mensagem =
         err instanceof ApiError
           ? err.detail
@@ -174,8 +179,7 @@ export default function Cadastro() {
                 d="M14 27l7 7 16-16"
               />
             </svg>
-            <h2 className="cadastro-card__success-title">Conta criada com sucesso!</h2>
-            <p className="cadastro-card__success-subtitle">Redirecionando para o sistema...</p>
+            <p className="cadastro-card__success-title">Conta criada!</p>
           </div>
         ) : (
           <>

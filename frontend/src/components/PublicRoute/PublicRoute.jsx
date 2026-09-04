@@ -1,18 +1,17 @@
-// src/components/PublicRoute/PublicRoute.jsx
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 export default function PublicRoute({ children }) {
-  const { usuario, loading } = useAuth();
+  const { usuario, loading, emTransicaoCadastro } = useAuth();
 
-  // Enquanto ainda verificamos se existe sessão ativa, não renderiza nada
-  // para evitar "piscar" a tela de login antes de redirecionar para a Home
   if (loading) {
     return null;
   }
 
-  // Se já estiver logado, redireciona diretamente para a Home
-  if (usuario) {
+  // Se está logado, mas o Cadastro avisou que está no meio da
+  // transição de sucesso, segura o redirecionamento — deixa o
+  // Cadastro terminar de mostrar o check verde primeiro.
+  if (usuario && !emTransicaoCadastro) {
     return <Navigate to="/home" replace />;
   }
 

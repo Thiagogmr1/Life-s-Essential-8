@@ -10,6 +10,13 @@ export function AuthProvider({ children }) {
   // evita "piscar" a tela de login antes de confirmar com o backend
   const [loading, setLoading] = useState(true);
 
+  // true durante a janela entre "conta criada com sucesso" e a
+  // navegação manual para /home feita pelo próprio Cadastro.jsx.
+  // Existe para impedir que o PublicRoute redirecione o usuário
+  // assim que `usuario` deixa de ser null, o que interromperia a
+  // tela de sucesso (check verde) antes dela terminar de aparecer.
+  const [emTransicaoCadastro, setEmTransicaoCadastro] = useState(false);
+
   useEffect(() => {
     api
       .obterUsuarioAtual()
@@ -35,7 +42,15 @@ export function AuthProvider({ children }) {
     setUsuario(null);
   }, []);
 
-  const value = { usuario, loading, login, cadastrar, logout };
+  const value = {
+    usuario,
+    loading,
+    login,
+    cadastrar,
+    logout,
+    emTransicaoCadastro,
+    setEmTransicaoCadastro,
+  };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
