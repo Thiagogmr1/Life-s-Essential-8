@@ -13,7 +13,7 @@ const IBGE_MUNICIPIOS_URL = (uf) =>
 
 export default function Cadastro() {
   const [nome, setNome] = useState("");
-  const [dataNascimento, setDataNascimento] = useState(""); // agora guarda no formato dd/mm/aaaa
+  const [dataNascimento, setDataNascimento] = useState("");
   const [sexo, setSexo] = useState("");
   const [estado, setEstado] = useState("");
   const [cidade, setCidade] = useState("");
@@ -71,7 +71,7 @@ export default function Cadastro() {
     carregarCidades();
   }, [estado]);
 
-async function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setErro(null);
 
@@ -110,189 +110,213 @@ async function handleSubmit(e) {
   }
 
   function formatarDataDigitada(valor) {
-  const somenteNumeros = valor.replace(/\D/g, "").slice(0, 8);
+    const somenteNumeros = valor.replace(/\D/g, "").slice(0, 8);
 
-  if (somenteNumeros.length <= 2) return somenteNumeros;
-  if (somenteNumeros.length <= 4) {
-    return `${somenteNumeros.slice(0, 2)}/${somenteNumeros.slice(2)}`;
+    if (somenteNumeros.length <= 2) return somenteNumeros;
+    if (somenteNumeros.length <= 4) {
+      return `${somenteNumeros.slice(0, 2)}/${somenteNumeros.slice(2)}`;
+    }
+    return `${somenteNumeros.slice(0, 2)}/${somenteNumeros.slice(2, 4)}/${somenteNumeros.slice(4)}`;
   }
-  return `${somenteNumeros.slice(0, 2)}/${somenteNumeros.slice(2, 4)}/${somenteNumeros.slice(4)}`;
-}
 
-function dataBrParaIso(dataBr) {
-  const [dia, mes, ano] = dataBr.split("/");
-  if (!dia || !mes || !ano || ano.length !== 4) return null;
-  return `${ano}-${mes}-${dia}`;
-}
+  function dataBrParaIso(dataBr) {
+    const [dia, mes, ano] = dataBr.split("/");
+    if (!dia || !mes || !ano || ano.length !== 4) return null;
+    return `${ano}-${mes}-${dia}`;
+  }
 
-function dataBrEhValida(dataBr) {
-  const iso = dataBrParaIso(dataBr);
-  if (!iso) return false;
+  function dataBrEhValida(dataBr) {
+    const iso = dataBrParaIso(dataBr);
+    if (!iso) return false;
 
-  const [ano, mes, dia] = iso.split("-").map(Number);
+    const [ano, mes, dia] = iso.split("-").map(Number);
 
-  if (mes < 1 || mes > 12) return false;
+    if (mes < 1 || mes > 12) return false;
 
-  const diasNoMes = new Date(ano, mes, 0).getDate(); // último dia do mês (esse uso é seguro, sem strings ISO)
-  if (dia < 1 || dia > diasNoMes) return false;
+    const diasNoMes = new Date(ano, mes, 0).getDate(); // último dia do mês
+    if (dia < 1 || dia > diasNoMes) return false;
 
-  const hoje = new Date();
-  const dataDigitada = new Date(ano, mes - 1, dia); // construtor com números = usa horário local, sem bug de fuso
+    const hoje = new Date();
+    const dataDigitada = new Date(ano, mes - 1, dia);
 
-  if (dataDigitada > hoje) return false; // não pode ser no futuro
+    if (dataDigitada > hoje) return false; // não pode ser no futuro
 
-  return true;
-}
+    return true;
+  }
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
+    <div className="cadastro-page">
+      <div className="cadastro-card">
         {sucesso ? (
-          <div className="auth-card__success" role="status" aria-live="polite">
+          <div className="cadastro-card__success" role="status" aria-live="polite">
             <svg
-              className="auth-card__success-icon"
+              className="cadastro-card__success-icon"
               viewBox="0 0 52 52"
               aria-hidden="true"
             >
               <circle
-                className="auth-card__success-circle"
+                className="cadastro-card__success-circle"
                 cx="26"
                 cy="26"
                 r="24"
                 fill="none"
               />
               <path
-                className="auth-card__success-check"
+                className="cadastro-card__success-check"
                 fill="none"
                 d="M14 27l7 7 16-16"
               />
             </svg>
-            <p className="auth-card__success-text">Conta criada!</p>
+            <h2 className="cadastro-card__success-title">Conta criada com sucesso!</h2>
+            <p className="cadastro-card__success-subtitle">Redirecionando para o sistema...</p>
           </div>
         ) : (
           <>
-            <h1 className="auth-card__title">Criar conta</h1>
+            <div className="cadastro-card__header">
 
-            <form onSubmit={handleSubmit}>
+              <h1 className="cadastro-card__title">Criar conta</h1>
+            </div>
+
+            <form className="cadastro-form" onSubmit={handleSubmit}>
               {erro && (
-                <p className="auth-card__error" role="alert">
-                  {erro}
-                </p>
+                <div className="cadastro-card__error" role="alert">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                  <span>{erro}</span>
+                </div>
               )}
 
-              <div className="auth-card__field">
-                <label htmlFor="nome">Nome</label>
-                <input
-                  id="nome"
-                  type="text"
-                  value={nome}
-                  onChange={(e) => setNome(e.target.value)}
-                  required
-                />
-              </div>
+              <div className="cadastro-grid">
+                <div className="cadastro-field cadastro-field--full">
+                  <label htmlFor="nome">Nome completo</label>
+                  <input
+                    id="nome"
+                    type="text"
+                    placeholder="Ex: Maria da Silva"
+                    value={nome}
+                    onChange={(e) => setNome(e.target.value)}
+                    required
+                  />
+                </div>
 
-              <div className="auth-card__field">
-                <label htmlFor="dataNascimento">Data de nascimento</label>
-                <input
-                  id="dataNascimento"
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="dd/mm/aaaa"
-                  value={dataNascimento}
-                  onChange={(e) => setDataNascimento(formatarDataDigitada(e.target.value))}
-                  maxLength={10}
-                  required
-                />
-              </div>
+                <div className="cadastro-field">
+                  <label htmlFor="dataNascimento">Data de nascimento</label>
+                  <input
+                    id="dataNascimento"
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="dd/mm/aaaa"
+                    value={dataNascimento}
+                    onChange={(e) => setDataNascimento(formatarDataDigitada(e.target.value))}
+                    maxLength={10}
+                    required
+                  />
+                </div>
 
-              <div className="auth-card__field">
-                <label htmlFor="sexo">Sexo</label>
-                <select
-                  id="sexo"
-                  value={sexo}
-                  onChange={(e) => setSexo(e.target.value)}
-                  required
-                >
-                  <option value="" disabled>
-                    Selecione
-                  </option>
-                  <option value="masculino">Masculino</option>
-                  <option value="feminino">Feminino</option>
-                </select>
-              </div>
-
-              <div className="auth-card__field">
-                <label htmlFor="estado">Estado</label>
-                <select
-                  id="estado"
-                  value={estado}
-                  onChange={(e) => setEstado(e.target.value)}
-                  required
-                >
-                  <option value="" disabled>
-                    Selecione
-                  </option>
-                  {estados.map((uf) => (
-                    <option key={uf.sigla} value={uf.sigla}>
-                      {uf.nome}
+                <div className="cadastro-field">
+                  <label htmlFor="sexo">Sexo biológico</label>
+                  <select
+                    id="sexo"
+                    value={sexo}
+                    onChange={(e) => setSexo(e.target.value)}
+                    required
+                  >
+                    <option value="" disabled>
+                      Selecione
                     </option>
-                  ))}
-                </select>
-              </div>
+                    <option value="masculino">Masculino</option>
+                    <option value="feminino">Feminino</option>
+                  </select>
+                </div>
 
-              <div className="auth-card__field">
-                <label htmlFor="cidade">Cidade</label>
-                <select
-                  id="cidade"
-                  value={cidade}
-                  onChange={(e) => setCidade(e.target.value)}
-                  disabled={!estado || carregandoCidades}
-                  required
-                >
-                  <option value="" disabled>
-                    {carregandoCidades ? "Carregando..." : "Selecione"}
-                  </option>
-                  {cidades.map((c) => (
-                    <option key={c.id} value={c.nome}>
-                      {c.nome}
+                <div className="cadastro-field">
+                  <label htmlFor="estado">Estado</label>
+                  <select
+                    id="estado"
+                    value={estado}
+                    onChange={(e) => setEstado(e.target.value)}
+                    required
+                  >
+                    <option value="" disabled>
+                      Selecione
                     </option>
-                  ))}
-                </select>
-              </div>
+                    {estados.map((uf) => (
+                      <option key={uf.sigla} value={uf.sigla}>
+                        {uf.nome}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-              <div className="auth-card__field">
-                <label htmlFor="email">Email</label>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
+                <div className="cadastro-field">
+                  <label htmlFor="cidade">Cidade</label>
+                  <select
+                    id="cidade"
+                    value={cidade}
+                    onChange={(e) => setCidade(e.target.value)}
+                    disabled={!estado || carregandoCidades}
+                    required
+                  >
+                    <option value="" disabled>
+                      {carregandoCidades ? "Carregando..." : "Selecione"}
+                    </option>
+                    {cidades.map((c) => (
+                      <option key={c.id} value={c.nome}>
+                        {c.nome}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-              <div className="auth-card__field">
-                <label htmlFor="senha">Senha</label>
-                <input
-                  id="senha"
-                  type="password"
-                  minLength={8}
-                  value={senha}
-                  onChange={(e) => setSenha(e.target.value)}
-                  required
-                />
+                <div className="cadastro-field">
+                  <label htmlFor="email">Email</label>
+                  <input
+                    id="email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="cadastro-field">
+                  <label htmlFor="senha">Senha</label>
+                  <input
+                    id="senha"
+                    type="password"
+                    placeholder="Mínimo de 8 caracteres"
+                    minLength={8}
+                    value={senha}
+                    onChange={(e) => setSenha(e.target.value)}
+                    required
+                  />
+                </div>
               </div>
 
               <button
-                className="auth-card__submit"
+                className="cadastro-submit"
                 type="submit"
                 disabled={enviando}
               >
                 {enviando ? "Criando conta..." : "Criar conta"}
               </button>
 
-              <p className="auth-card__footer">
-                Já tem conta? <Link to="/login">Entrar</Link>
+              <p className="cadastro-footer">
+                Já tem uma conta? <Link to="/login">Entrar</Link>
               </p>
             </form>
           </>

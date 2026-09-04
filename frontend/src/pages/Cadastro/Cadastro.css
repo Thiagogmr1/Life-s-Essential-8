@@ -4,129 +4,349 @@
    PÁGINA
    ───────────────────────────── */
 
-   .auth-page {
-    position: relative;
-    isolation: isolate;
-  
-    min-height: calc(100vh - var(--header-height));
-    width: 100%;
-  
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  
-    padding: 2rem;
-  
-    background: var(--paper);
-  
-    overflow: hidden;
-  }
-  
-  
-  /* ─────────────────────────────
-     LINHAS DECORATIVAS
-     ───────────────────────────── */
-  
-  .auth-page::after {
-    content: "";
-    position: absolute;
-  
-    width: 900px;
-    height: 900px;
-  
-    right: -450px;
-    bottom: -400px;
-  
-    border: 1px solid rgba(45, 169, 224, 0.10);
-    border-radius: 50%;
-  
-    box-shadow:
-      -100px -50px 0 -1px rgba(45, 169, 224, 0.07),
-      -200px -100px 0 -1px rgba(45, 169, 224, 0.05),
-      -300px -150px 0 -1px rgba(45, 169, 224, 0.03);
-  
-    pointer-events: none;
-    z-index: -1;
-  }
-  
-  
-  /* ─────────────────────────────
-     CARD
-     ───────────────────────────── */
-  
-  .auth-card {
-    position: relative;
-    z-index: 1;
-  
-    width: 100%;
-    max-width: 440px;
-  
-    padding: 2.5rem;
-  
-    background: var(--surface);
-  
-    border: 1px solid var(--line);
-    border-radius: 12px; /* raio maior, proposital: card mais robusto que o do Login */
-  
-    box-shadow: var(--shadow-card);
-  }
-  
-  
-  /* ─────────────────────────────
-     TÍTULO
-     ───────────────────────────── */
-  
-  .auth-card__title {
-    margin: 0 0 1.75rem;
-  
-    font-family: var(--font-display);
-    font-size: 1.6rem;
-    font-weight: 700;
-  
-    color: var(--uni-navy);
-  }
-  
-  
-  /* ─────────────────────────────
-     ERRO
-     ───────────────────────────── */
-  
-  .auth-card__error {
-    margin: 0 0 1.25rem;
-  
-    padding: 0.7rem 0.9rem;
-  
-    background: rgba(196, 32, 47, 0.08);
-    color: var(--uni-red);
-  
-    border: 1px solid rgba(196, 32, 47, 0.25);
-    border-radius: var(--radius);
-  
-    font-size: 0.85rem;
-    line-height: 1.4;
-  }
-  
+.cadastro-page {
+  position: relative;
+  isolation: isolate;
 
-  /* ─────────────────────────────
+  min-height: calc(100vh - var(--header-height));
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 3rem 1.5rem;
+
+  background: var(--paper);
+
+  overflow: hidden;
+}
+
+/* Fundo institucional sutil */
+.cadastro-page::after {
+  content: "";
+  position: absolute;
+
+  width: 800px;
+  height: 800px;
+
+  right: -300px;
+  bottom: -300px;
+
+  border: 1px solid rgba(45, 169, 224, 0.08);
+  border-radius: 50%;
+
+  box-shadow:
+    -100px -60px 0 -1px rgba(45, 169, 224, 0.05),
+    -200px -120px 0 -1px rgba(45, 169, 224, 0.03);
+
+  pointer-events: none;
+  z-index: -1;
+}
+
+
+/* ─────────────────────────────
+   CARD
+   ───────────────────────────── */
+
+.cadastro-card {
+  position: relative;
+  z-index: 1;
+
+  width: 100%;
+  max-width: 600px;
+
+  padding: 2.5rem 2.75rem;
+
+  background: var(--surface);
+
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+
+  box-shadow: var(--shadow-card);
+}
+
+
+/* ─────────────────────────────
+   CABEÇALHO
+   ───────────────────────────── */
+
+.cadastro-card__header {
+  margin-bottom: 1.75rem;
+}
+
+.cadastro-card__badge {
+  display: inline-block;
+
+  padding: 0.25rem 0.65rem;
+  margin-bottom: 0.75rem;
+
+  border-radius: 999px;
+
+  background: #edf1f7;
+  color: #57627e;
+
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cadastro-card__title {
+  margin: 0 0 0.4rem;
+
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  font-weight: 700;
+
+  color: var(--uni-navy);
+}
+
+.cadastro-card__description {
+  margin: 0;
+
+  color: var(--ink-soft);
+
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+
+/* ─────────────────────────────
+   GRID DE FORMULÁRIO (2 COLUNAS NO DESKTOP)
+   ───────────────────────────── */
+
+.cadastro-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.cadastro-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem 1.25rem;
+
+  margin-bottom: 1.5rem;
+}
+
+.cadastro-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.cadastro-field--full {
+  grid-column: span 2;
+}
+
+.cadastro-field label {
+  display: block;
+
+  margin-bottom: 0.35rem;
+
+  color: var(--uni-navy);
+
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.cadastro-field input,
+.cadastro-field select {
+  box-sizing: border-box;
+
+  width: 100%;
+  height: 42px;
+
+  padding: 0.6rem 0.85rem;
+
+  background: var(--surface);
+  color: var(--ink);
+
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.cadastro-field select {
+  cursor: pointer;
+  appearance: none;
+
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%239aa3b7'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px;
+
+  padding-right: 2.2rem;
+}
+
+.cadastro-field select:disabled {
+  background-color: var(--paper);
+  color: var(--ink-soft);
+  cursor: not-allowed;
+}
+
+.cadastro-field input::placeholder {
+  color: #9aa3b7;
+  font-size: 0.82rem;
+}
+
+.cadastro-field input:hover,
+.cadastro-field select:hover:not(:disabled) {
+  border-color: #c4ccda;
+}
+
+.cadastro-field input:focus,
+.cadastro-field select:focus {
+  outline: none;
+
+  border-color: var(--uni-sky);
+
+  box-shadow:
+    0 0 0 3px rgba(45, 169, 224, 0.12);
+}
+
+
+/* ─────────────────────────────
+   ALERTA DE ERRO
+   ───────────────────────────── */
+
+.cadastro-card__error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  margin-bottom: 1.25rem;
+  padding: 0.7rem 0.9rem;
+
+  background: rgba(196, 32, 47, 0.08);
+  color: var(--uni-red);
+
+  border: 1px solid rgba(196, 32, 47, 0.25);
+  border-radius: var(--radius);
+
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.cadastro-card__error svg {
+  flex-shrink: 0;
+}
+
+
+/* ─────────────────────────────
+   BOTÃO DE SUBMIT
+   ───────────────────────────── */
+
+.cadastro-submit {
+  width: 100%;
+  height: 44px;
+
+  border: none;
+  border-radius: var(--radius);
+
+  background: var(--uni-navy);
+  color: #ffffff;
+
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.cadastro-submit:hover:not(:disabled) {
+  background: var(--uni-navy-deep);
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 4px 12px rgba(14, 24, 48, 0.15);
+}
+
+.cadastro-submit:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.cadastro-submit:disabled {
+  background: var(--line);
+  color: var(--ink-soft);
+
+  cursor: not-allowed;
+}
+
+.cadastro-submit:focus-visible {
+  outline: 2px solid var(--uni-sky);
+  outline-offset: 2px;
+}
+
+
+/* ─────────────────────────────
+   RODAPÉ
+   ───────────────────────────── */
+
+.cadastro-footer {
+  margin: 1.25rem 0 0;
+
+  text-align: center;
+
+  color: var(--ink-soft);
+
+  font-size: 0.84rem;
+}
+
+.cadastro-footer a {
+  color: var(--brand);
+
+  font-weight: 600;
+
+  text-decoration: none;
+}
+
+.cadastro-footer a:hover {
+  text-decoration: underline;
+}
+
+.cadastro-footer a:focus-visible {
+  outline: 2px solid var(--uni-sky);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+
+/* ─────────────────────────────
    SUCESSO
    ───────────────────────────── */
 
-.auth-card__success {
+.cadastro-card__success {
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
 
-  padding: 1.5rem 0;
+  padding: 2rem 0;
 }
 
-.auth-card__success-icon {
+.cadastro-card__success-icon {
   width: 64px;
   height: 64px;
 
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
-.auth-card__success-circle {
+.cadastro-card__success-circle {
   stroke: #22c55e;
   stroke-width: 2;
 
@@ -136,7 +356,7 @@
   animation: draw-circle 0.8s ease-out forwards;
 }
 
-.auth-card__success-check {
+.cadastro-card__success-check {
   stroke: #22c55e;
   stroke-width: 3;
   stroke-linecap: round;
@@ -148,17 +368,27 @@
   animation: draw-check 0.5s ease-out 0.7s forwards;
 }
 
-.auth-card__success-text {
-  margin: 0;
+.cadastro-card__success-title {
+  margin: 0 0 0.35rem;
 
   color: var(--uni-navy);
 
   font-family: var(--font-display);
-  font-size: 1.15rem;
+  font-size: 1.3rem;
   font-weight: 700;
 
   opacity: 0;
-  animation: fade-in 0.5s ease-out 1s forwards;
+  animation: fade-in 0.5s ease-out 0.9s forwards;
+}
+
+.cadastro-card__success-subtitle {
+  margin: 0;
+
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+
+  opacity: 0;
+  animation: fade-in 0.5s ease-out 1.1s forwards;
 }
 
 @keyframes draw-circle {
@@ -179,229 +409,48 @@
   }
 }
 
-  
-  /* ─────────────────────────────
-     CAMPOS
-     ───────────────────────────── */
-  
-  .auth-card__field {
-    margin-bottom: 1.1rem;
+
+/* ─────────────────────────────
+   RESPONSIVO — MOBILE
+   ───────────────────────────── */
+
+@media (max-width: 640px) {
+  .cadastro-page {
+    padding: 1.5rem 1rem;
+    min-height: calc(100vh - var(--header-height));
   }
-  
-  .auth-card__field label {
-    display: block;
-  
-    margin-bottom: 0.4rem;
-  
-    color: var(--ink-soft);
-  
-    font-size: 0.82rem;
-    font-weight: 600;
+
+  .cadastro-card {
+    padding: 1.75rem 1.25rem;
+    max-width: 100%;
   }
-  
-  .auth-card__field input,
-  .auth-card__field select {
-    box-sizing: border-box;
-  
-    width: 100%;
-    height: 42px;
-  
-    padding: 0.7rem 0.85rem;
-  
-    background: var(--surface);
-    color: var(--ink);
-  
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
-  
-    font-family: var(--font-body);
-    font-size: 0.9rem;
-  
-    transition:
-      border-color 0.15s ease,
-      box-shadow 0.15s ease;
+
+  .cadastro-grid {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
   }
-  
-  .auth-card__field select {
-    cursor: pointer;
-    appearance: none;
-  
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%239aa3b7'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.85rem center;
-    background-size: 16px;
-  
-    padding-right: 2.5rem;
+
+  .cadastro-field--full {
+    grid-column: span 1;
   }
-  
-  .auth-card__field select:disabled {
-    background-color: var(--paper);
-    color: var(--ink-soft);
-    cursor: not-allowed;
+
+  .cadastro-card__title {
+    font-size: 1.45rem;
   }
-  
-  .auth-card__field input::placeholder {
-    color: #9aa3b7;
+
+  .cadastro-field input,
+  .cadastro-field select,
+  .cadastro-submit {
+    height: 44px;
   }
-  
-  .auth-card__field input:hover,
-  .auth-card__field select:hover:not(:disabled) {
-    border-color: #c4ccda;
+}
+
+@media (max-width: 380px) {
+  .cadastro-page {
+    padding: 1rem 0.75rem;
   }
-  
-  .auth-card__field input:focus,
-  .auth-card__field select:focus {
-    outline: none;
-  
-    border-color: var(--uni-sky);
-  
-    box-shadow:
-      0 0 0 3px rgba(45, 169, 224, 0.08);
+
+  .cadastro-card {
+    padding: 1.25rem 1rem;
   }
-  
-  
-  /* ─────────────────────────────
-     BOTÃO
-     ───────────────────────────── */
-  
-  .auth-card__submit {
-    width: 100%;
-    height: 42px;
-  
-    margin-top: 0.4rem;
-  
-    border: none;
-    border-radius: var(--radius);
-  
-    background: var(--uni-navy);
-    color: var(--surface);
-  
-    font-family: var(--font-body);
-    font-size: 0.9rem;
-    font-weight: 600;
-  
-    cursor: pointer;
-  
-    transition:
-      transform 0.15s ease,
-      box-shadow 0.15s ease,
-      background 0.15s ease;
-  }
-  
-  .auth-card__submit:hover:not(:disabled) {
-    background: #1d2d52;
-  
-    transform: translateY(-1px);
-  
-    box-shadow:
-      0 5px 14px rgba(14, 24, 48, 0.12);
-  }
-  
-  .auth-card__submit:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: none;
-  }
-  
-  .auth-card__submit:disabled {
-    background: var(--line);
-    color: var(--ink-soft);
-  
-    cursor: not-allowed;
-  }
-  
-  .auth-card__submit:focus-visible {
-    outline: 2px solid var(--uni-sky);
-    outline-offset: 2px;
-  }
-  
-  
-  /* ─────────────────────────────
-     RODAPÉ
-     ───────────────────────────── */
-  
-  .auth-card__footer {
-    margin: 1.5rem 0 0;
-  
-    text-align: center;
-  
-    color: var(--ink-soft);
-  
-    font-size: 0.82rem;
-  }
-  
-  .auth-card__footer a {
-    color: var(--brand);
-  
-    font-weight: 600;
-  
-    text-decoration: none;
-  }
-  
-  .auth-card__footer a:hover {
-    text-decoration: underline;
-  }
-  
-  .auth-card__footer a:focus-visible {
-    outline: 2px solid var(--uni-sky);
-    outline-offset: 2px;
-    border-radius: 2px;
-  }
-  
-  
-  /* ─────────────────────────────
-     RESPONSIVO
-     ───────────────────────────── */
-  
-  @media (max-width: 640px) {
-    .auth-page {
-      min-height: calc(100vh - var(--header-height));
-  
-      padding: 1.25rem;
-    }
-  
-    .auth-card {
-      max-width: 100%;
-      padding: 1.75rem;
-    }
-  
-    .auth-card__title {
-      font-size: 1.45rem;
-      margin-bottom: 1.5rem;
-    }
-  
-    .auth-card__field {
-      margin-bottom: 1rem;
-    }
-  
-    .auth-card__field input,
-    .auth-card__submit {
-      height: 44px;
-    }
-  
-    .auth-page::after {
-      width: 600px;
-      height: 600px;
-  
-      right: -350px;
-      bottom: -250px;
-    }
-  }
-  
-  
-  /* ─────────────────────────────
-     MOBILE PEQUENO
-     ───────────────────────────── */
-  
-  @media (max-width: 380px) {
-    .auth-page {
-      padding: 1rem;
-    }
-  
-    .auth-card {
-      padding: 1.5rem;
-    }
-  
-    .auth-card__title {
-      font-size: 1.35rem;
-    }
-  }
+}
