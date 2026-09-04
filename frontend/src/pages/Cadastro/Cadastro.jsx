@@ -27,6 +27,8 @@ export default function Cadastro() {
   const [cidades, setCidades] = useState([]);
   const [carregandoCidades, setCarregandoCidades] = useState(false);
 
+  const [confirmarSenha, setConfirmarSenha] = useState("");
+
   const { cadastrar } = useAuth();
   const navigate = useNavigate();
 
@@ -77,6 +79,11 @@ export default function Cadastro() {
 
     if (!dataBrEhValida(dataNascimento)) {
       setErro("Data de nascimento inválida");
+      return;
+    }
+
+    if (senha !== confirmarSenha) {
+      setErro("As senhas não coincidem");
       return;
     }
 
@@ -205,7 +212,7 @@ export default function Cadastro() {
                   <input
                     id="nome"
                     type="text"
-                    placeholder="Ex: Maria da Silva"
+                    // placeholder="Ex: Maria da Silva"
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
                     required
@@ -286,7 +293,7 @@ export default function Cadastro() {
                   <input
                     id="email"
                     type="email"
-                    placeholder="seu@email.com"
+                    // placeholder="seu@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -302,6 +309,19 @@ export default function Cadastro() {
                     minLength={8}
                     value={senha}
                     onChange={(e) => setSenha(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="cadastro-field">
+                  <label htmlFor="confirmarSenha">Confirmar senha</label>
+                  <input
+                    id="confirmarSenha"
+                    type="password"
+                    placeholder="Digite a senha novamente"
+                    minLength={8}
+                    value={confirmarSenha}
+                    onChange={(e) => setConfirmarSenha(e.target.value)}
                     required
                   />
                 </div>
