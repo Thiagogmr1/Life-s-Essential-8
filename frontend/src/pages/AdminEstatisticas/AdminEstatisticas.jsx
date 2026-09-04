@@ -25,6 +25,24 @@ const DOMINIO_LABELS = {
   score_pressao: "Pressão arterial",
 };
 
+function getScoreClass(score) {
+  if (score === null || score === undefined || score === "—") return "";
+  const n = typeof score === "number" ? score : parseFloat(score);
+  if (isNaN(n)) return "";
+  if (n >= 80) return "admin-score--high";
+  if (n >= 50) return "admin-score--mid";
+  return "admin-score--low";
+}
+
+function getClassificacaoClass(classificacao) {
+  if (!classificacao) return "";
+  const c = classificacao.toLowerCase();
+  if (c === "alta") return "admin-badge--alta";
+  if (c === "moderada") return "admin-badge--moderada";
+  if (c === "baixa") return "admin-badge--baixa";
+  return "";
+}
+
 export default function AdminEstatisticas() {
   const [resumo, setResumo] = useState(null);
   const [carregandoResumo, setCarregandoResumo] = useState(true);
@@ -123,29 +141,29 @@ export default function AdminEstatisticas() {
     return todos;
   }
 
-async function handleExportarExcel() {
-  setExportandoExcel(true);
-  try {
-    const todosUsuarios = await buscarTodosUsuariosFiltrados();
-    exportUsuariosAdminToExcel(todosUsuarios);
-  } catch (err) {
-    alert("Erro ao exportar: " + (err instanceof ApiError ? err.detail : "tente novamente"));
-  } finally {
-    setExportandoExcel(false);
+  async function handleExportarExcel() {
+    setExportandoExcel(true);
+    try {
+      const todosUsuarios = await buscarTodosUsuariosFiltrados();
+      exportUsuariosAdminToExcel(todosUsuarios);
+    } catch (err) {
+      alert("Erro ao exportar: " + (err instanceof ApiError ? err.detail : "tente novamente"));
+    } finally {
+      setExportandoExcel(false);
+    }
   }
-}
 
-async function handleExportarPdf() {
-  setExportandoPdf(true);
-  try {
-    const todosUsuarios = await buscarTodosUsuariosFiltrados();
-    exportEstatisticasToPdf(resumo, todosUsuarios);
-  } catch (err) {
-    alert("Erro ao exportar: " + (err instanceof ApiError ? err.detail : "tente novamente"));
-  } finally {
-    setExportandoPdf(false);
+  async function handleExportarPdf() {
+    setExportandoPdf(true);
+    try {
+      const todosUsuarios = await buscarTodosUsuariosFiltrados();
+      exportEstatisticasToPdf(resumo, todosUsuarios);
+    } catch (err) {
+      alert("Erro ao exportar: " + (err instanceof ApiError ? err.detail : "tente novamente"));
+    } finally {
+      setExportandoPdf(false);
+    }
   }
-}
 
   return (
     <div className="admin-page">
@@ -176,17 +194,17 @@ async function handleExportarPdf() {
         {resumo && (
           <>
             <div className="admin-summary__cards">
-              <div className="admin-card">
+              <div className="admin-card admin-card--users">
                 <span className="admin-card__label">Usuários cadastrados</span>
                 <span className="admin-card__value">{resumo.total_usuarios}</span>
               </div>
-              <div className="admin-card">
+              <div className="admin-card admin-card--evals">
                 <span className="admin-card__label">Avaliações realizadas</span>
                 <span className="admin-card__value">{resumo.total_avaliacoes}</span>
               </div>
-              <div className="admin-card">
+              <div className="admin-card admin-card--score">
                 <span className="admin-card__label">Score médio geral</span>
-                <span className="admin-card__value">
+                <span className={`admin-card__value ${getScoreClass(resumo.score_medio_geral)}`}>
                   {resumo.score_medio_geral ?? "—"}
                 </span>
               </div>
@@ -200,7 +218,7 @@ async function handleExportarPdf() {
                     {Object.entries(resumo.media_por_dominio).map(([chave, valor]) => (
                       <li key={chave}>
                         <span>{DOMINIO_LABELS[chave] || chave}</span>
-                        <strong>{valor}</strong>
+                        <strong className={getScoreClass(valor)}>{valor}</strong>
                       </li>
                     ))}
                   </ul>
@@ -211,10 +229,13 @@ async function handleExportarPdf() {
                   <ul className="admin-panel__list">
                     {resumo.distribuicao_classificacao.map((item) => (
                       <li key={item.classificacao}>
-                        <span>
+                        <span className="admin-class-label">
+                          <span className={`admin-dot admin-dot--${item.classificacao}`} />
                           {CLASSIFICACAO_LABELS[item.classificacao] || item.classificacao}
                         </span>
-                        <strong>{item.quantidade}</strong>
+                        <strong className={`admin-count-badge admin-count-badge--${item.classificacao}`}>
+                          {item.quantidade}
+                        </strong>
                       </li>
                     ))}
                   </ul>
@@ -225,11 +246,11 @@ async function handleExportarPdf() {
                   <ul className="admin-panel__list">
                     {resumo.media_por_sexo.map((item) => (
                       <li key={item.sexo}>
-                        <span>
-                          {item.sexo === "masculino" ? "Masculino" : "Feminino"} (
-                          {item.quantidade})
+                        <span className="admin-sex-label">
+                          <span className={`admin-sex-dot admin-sex-dot--${item.sexo}`} />
+                          {item.sexo === "masculino" ? "Masculino" : "Feminino"} ({item.quantidade})
                         </span>
-                        <strong>{item.score_medio}</strong>
+                        <strong className={getScoreClass(item.score_medio)}>{item.score_medio}</strong>
                       </li>
                     ))}
                   </ul>
@@ -319,7 +340,24 @@ async function handleExportarPdf() {
               onClick={handleExportarExcel}
               disabled={exportandoExcel || usuarios.length === 0}
             >
-              {exportandoExcel ? "Exportando..." : "Exportar Excel"}
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="8" y1="13" x2="16" y2="13"></line>
+                <line x1="8" y1="17" x2="16" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              <span>{exportandoExcel ? "Exportando..." : "Exportar Excel"}</span>
             </button>
 
             <button
@@ -328,7 +366,23 @@ async function handleExportarPdf() {
               onClick={handleExportarPdf}
               disabled={exportandoPdf || !resumo || usuarios.length === 0}
             >
-              {exportandoPdf ? "Exportando..." : "Exportar PDF"}
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <path d="M9 15h6"></path>
+                <path d="M12 12v6"></path>
+              </svg>
+              <span>{exportandoPdf ? "Exportando..." : "Exportar PDF"}</span>
             </button>
           </div>
 
@@ -369,11 +423,19 @@ async function handleExportarPdf() {
                       <td>{u.cidade}/{u.estado}</td>
                       <td>{u.email}</td>
                       <td>{u.total_avaliacoes}</td>
-                      <td>{u.ultimo_score ?? "—"}</td>
                       <td>
-                        {u.ultima_classificacao
-                          ? CLASSIFICACAO_LABELS[u.ultima_classificacao] || u.ultima_classificacao
-                          : "—"}
+                        <strong className={getScoreClass(u.ultimo_score)}>
+                          {u.ultimo_score ?? "—"}
+                        </strong>
+                      </td>
+                      <td>
+                        {u.ultima_classificacao ? (
+                          <span className={`admin-badge ${getClassificacaoClass(u.ultima_classificacao)}`}>
+                            {CLASSIFICACAO_LABELS[u.ultima_classificacao] || u.ultima_classificacao}
+                          </span>
+                        ) : (
+                          "—"
+                        )}
                       </td>
                     </tr>
                   ))}

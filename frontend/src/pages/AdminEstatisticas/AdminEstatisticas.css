@@ -127,6 +127,24 @@
   border-radius: var(--radius);
 
   box-shadow: var(--shadow-card);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(14, 24, 48, 0.08);
+}
+
+.admin-card--users {
+  border-top: 3px solid var(--uni-sky);
+}
+
+.admin-card--evals {
+  border-top: 3px solid var(--score-high);
+}
+
+.admin-card--score {
+  border-top: 3px solid var(--uni-gold);
 }
 
 .admin-card__label {
@@ -204,6 +222,110 @@
 .admin-panel__list strong {
   color: var(--uni-navy);
   font-weight: 700;
+}
+
+
+/* ─────────────────────────────
+   CORES SEMÂNTICAS DISCRETAS (MINIMALISTA)
+   ───────────────────────────── */
+
+.admin-score--high {
+  color: var(--score-high) !important;
+}
+
+.admin-score--mid {
+  color: #b47814 !important;
+}
+
+.admin-score--low {
+  color: var(--score-low) !important;
+}
+
+.admin-class-label,
+.admin-sex-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.admin-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.admin-dot--alta {
+  background: var(--score-high);
+}
+
+.admin-dot--moderada {
+  background: var(--uni-gold);
+}
+
+.admin-dot--baixa {
+  background: var(--score-low);
+}
+
+.admin-count-badge {
+  font-weight: 700;
+}
+
+.admin-count-badge--alta {
+  color: var(--score-high);
+}
+
+.admin-count-badge--moderada {
+  color: #b47814;
+}
+
+.admin-count-badge--baixa {
+  color: var(--score-low);
+}
+
+.admin-sex-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.admin-sex-dot--masculino {
+  background: #2DA9E0;
+}
+
+.admin-sex-dot--feminino {
+  background: #db2777;
+}
+
+/* Badges da Tabela */
+.admin-badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.admin-badge--alta {
+  background: rgba(31, 122, 92, 0.1);
+  color: var(--score-high);
+  border: 1px solid rgba(31, 122, 92, 0.25);
+}
+
+.admin-badge--moderada {
+  background: rgba(217, 164, 65, 0.12);
+  color: #b47814;
+  border: 1px solid rgba(217, 164, 65, 0.3);
+}
+
+.admin-badge--baixa {
+  background: rgba(196, 32, 47, 0.1);
+  color: var(--score-low);
+  border: 1px solid rgba(196, 32, 47, 0.25);
 }
 
 
@@ -428,6 +550,9 @@
 }
 
 .admin-export__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   height: 38px;
   padding: 0 1.1rem;
   color: #ffffff;
@@ -520,5 +645,15 @@
   .admin-filters__field {
     min-width: 100px;
     flex: 1 1 45%;
+  }
+
+  .admin-export-group {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .admin-export__button {
+    flex: 1;
+    justify-content: center;
   }
 }
