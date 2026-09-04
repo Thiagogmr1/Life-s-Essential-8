@@ -88,11 +88,11 @@ export default function Questionnaire() {
   const isFirst = stepIndex === 0;
   const isLast = stepIndex === QUESTIONNAIRE_STEPS.length - 1;
 
-  const goNext = async () => {
+const goNext = async () => {
     if (isLast) {
       try {
-        await submitAssessment();
-        navigate("/resultado");
+        const resultado = await submitAssessment();
+        navigate(`/resultado/${resultado.id}`);
       } catch {
         // erro já fica disponível em `erro` (do contexto) e é exibido
         // abaixo — usuário permanece na última pergunta para tentar de novo

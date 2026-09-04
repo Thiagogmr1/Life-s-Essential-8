@@ -1,24 +1,55 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAssessment } from "../../context/AssessmentContext";
 import ResultView from "./ResultView";
 import "./Results.css";
 import { exportResultToPdf } from "../../utils/exportPdf";
 
 export default function Results() {
-  const { result, resetAnswers, enviando } = useAssessment();
+  const { id } = useParams();
+  const { result, resetAnswers, enviando, history, carregarHistorico, erro } = useAssessment();
   const navigate = useNavigate();
+  const [carregando, setCarregando] = useState(false);
 
-  if (enviando) {
+  // Se temos um id na URL mas não temos o `result` em memória (ex:
+  // refresh de página), buscamos o histórico e localizamos a
+  // avaliação por id — mesmo padrão usado em HistoryDetail.
+  useEffect(() => {
+    if (id && !result) {
+      setCarregando(true);
+      carregarHistorico().finally(() => setCarregando(false));
+    }
+  }, [id, result, carregarHistorico]);
+
+  const resultadoExibido = result ?? history.find((item) => String(item.id) === id);
+
+  if (enviando || carregando) {
     return (
       <div className="results-page">
         <div className="results-card">
-          <p>Calculando resultado...</p>
+          <p>{enviando ? "Calculando resultado..." : "Carregando avaliação..."}</p>
         </div>
       </div>
     );
   }
 
-  if (!result) {
+  if (erro) {
+    return (
+      <div className="results-page">
+        <div className="results-card">
+          <p role="alert">{erro}</p>
+          <Link
+            to="/historico"
+            className="results-card__btn results-card__btn--primary"
+          >
+            Ver histórico
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!resultadoExibido) {
     return (
       <div className="results-page">
         <div className="results-card">
@@ -42,7 +73,7 @@ export default function Results() {
   return (
     <div className="results-page">
       <ResultView
-        result={result}
+        result={resultadoExibido}
         actions={
           <>
             <button
@@ -69,7 +100,7 @@ export default function Results() {
             <button
               type="button"
               className="results-card__btn results-card__btn--pdf"
-              onClick={() => exportResultToPdf(result)}
+              onClick={() => exportResultToPdf(resultadoExibido)}
             >
               <svg
                 width="16"
