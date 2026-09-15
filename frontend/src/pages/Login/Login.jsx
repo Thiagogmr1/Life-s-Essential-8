@@ -1,6 +1,7 @@
 // src/pages/Login/Login.jsx
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { ApiError } from "../../utils/api";
 import "./Login.css";
@@ -8,6 +9,7 @@ import "./Login.css";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [mostrarSenha, setMostrarSenha] = useState(false);
   const [erro, setErro] = useState(null);
   const [enviando, setEnviando] = useState(false);
 
@@ -71,29 +73,41 @@ export default function Login() {
     <form onSubmit={handleSubmit}>
 
       <div className="auth-card__field">
-        <label htmlFor="email">Email</label>
-
-        <input
-          id="email"
-          type="email"
-          // placeholder="seu@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <label htmlFor="email" className="sr-only">Email</label>
+        <div className="auth-card__input-wrapper">
+          <Mail size={18} className="auth-card__input-icon" />
+          <input
+            id="email"
+            type="email"
+            placeholder="E-mail"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
       </div>
 
       <div className="auth-card__field">
-        <label htmlFor="senha">Senha</label>
-
-        <input
-          id="senha"
-          type="password"
-          // placeholder="••••••••"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-          required
-        />
+        <label htmlFor="senha" className="sr-only">Senha</label>
+        <div className="auth-card__input-wrapper">
+          <Lock size={18} className="auth-card__input-icon" />
+          <input
+            id="senha"
+            type={mostrarSenha ? "text" : "password"}
+            placeholder="Senha"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            required
+          />
+          <button
+            type="button"
+            className="auth-card__toggle-senha"
+            onClick={() => setMostrarSenha((v) => !v)}
+            aria-label={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}
+          >
+            {mostrarSenha ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
       </div>
 
       <button
