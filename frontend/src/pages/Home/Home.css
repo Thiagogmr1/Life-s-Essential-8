@@ -29,6 +29,7 @@
 .home__title {
   font-size: clamp(2.5rem, 6vw, 3.5rem);
   margin-bottom: 0.25rem;
+  letter-spacing: 0.22em;
 }
 
 .home__lead {

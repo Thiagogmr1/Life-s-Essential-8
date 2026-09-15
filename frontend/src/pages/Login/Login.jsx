@@ -50,27 +50,32 @@ export default function Login() {
       <section className="auth-page__content">
   <div className="auth-card">
 
-    <span className="auth-card__badge">
-      BASEADO NA DIRETRIZ DA AMERICAN HEART ASSOCIATION
-    </span>
 
-    <h1 className="auth-card__title">
-      LESaC
-    </h1>
+  <img
+  src="/Natsa_logo.svg"
+  alt="NATSA"
+  className="auth-card__logo"
+/>
 
-    {/* <p className="auth-card__description">
-      Acesse sua conta para continuar avaliando
-      <br />
-      e acompanhando sua saúde cardiovascular.
-    </p> */}
+  <h1 className="auth-card__title">
+    NATSA
+  </h1>
 
-    {erro && (
-      <div className="auth-card__error">
-        {erro}
-      </div>
-    )}
+  <p className="auth-card__description">
+    Conhecer para preservar.
+  </p>
 
-    <form onSubmit={handleSubmit}>
+  <span className="auth-card__badge">
+    BASEADO NA DIRETRIZ DA AMERICAN HEART ASSOCIATION
+  </span>
+  
+  {erro && (
+    <div className="auth-card__error">
+      {erro}
+    </div>
+  )}
+
+  <form onSubmit={handleSubmit}>
 
       <div className="auth-card__field">
         <label htmlFor="email" className="sr-only">Email</label>

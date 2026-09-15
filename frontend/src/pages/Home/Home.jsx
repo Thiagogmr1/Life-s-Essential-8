@@ -14,7 +14,7 @@ export default function Home() {
           Baseado na diretriz da American Heart Association
         </span>
 
-        <h1 className="home__title">Life's Essential 8</h1>
+        <h1 className="home__title">NATSA</h1>
 
         <PulseLine />
 
