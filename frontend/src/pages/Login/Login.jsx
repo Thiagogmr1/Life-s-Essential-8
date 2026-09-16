@@ -62,7 +62,7 @@ export default function Login() {
   </h1>
 
   <p className="auth-card__description">
-    Conhecer para preservar.
+    Conhecer para preservar
   </p>
 
   <span className="auth-card__badge">

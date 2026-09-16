@@ -17,7 +17,7 @@ export default function Header() {
       <Link to={usuario ? "/home" : "/login"} className="app-header__brand">
         <img
           src="/assets/logo-unievangelica.png"
-          alt="UniEVANGÉLICA — Universidade Evangélica de Goiás"
+          alt="Universidade Evangélica de Goiás - UniEVANGÉLICA"
           className="app-header__logo"
         />
         <span className="app-header__divider" aria-hidden="true" />

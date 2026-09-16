@@ -33,7 +33,7 @@ function drawHeader(doc, title, subtitle) {
   doc.setFontSize(10);
   doc.setFont(undefined, "normal");
   doc.setTextColor(100);
-  doc.text("UniEVANGÉLICA — Universidade Evangélica de Goiás", 14, 27);
+  doc.text("Universidade Evangélica de Goiás - UniEVANGÉLICA", 14, 27);
   if (subtitle) {
     doc.text(subtitle, 14, 33);
   }
@@ -45,7 +45,7 @@ export function exportEstatisticasToPdf(resumo, usuarios) {
 
   drawHeader(
     doc,
-    "Relatório Administrativo — Life's Essential 8",
+    "Relatório Administrativo - NATSA",
     `Gerado em: ${hoje}`
   );
 

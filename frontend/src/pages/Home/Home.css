@@ -29,11 +29,12 @@
 .home__title {
   font-size: clamp(2.5rem, 6vw, 3.5rem);
   margin-bottom: 0.25rem;
+  margin-top: 1.2rem;
   letter-spacing: 0.22em;
 }
 
 .home__lead {
-  margin-top: 1.5rem;
+  margin-top: 1.7rem;
   font-size: 1.05rem;
 }
 
@@ -42,7 +43,15 @@
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-  margin-top: 0.5rem;
+  margin-top: 2.1rem;
+}
+.auth-card__logo {
+  display: block;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+
+  margin: 0 auto 0.8rem;
 }
 
 .home__cta,
@@ -84,7 +93,7 @@
 }
 
 .home__disclaimer {
-  margin-top: 1.5rem;
+  margin-top: 2rem;
   font-size: 0.8rem;
   color: var(--ink-soft);
   opacity: 0.8;

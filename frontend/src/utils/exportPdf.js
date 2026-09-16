@@ -10,12 +10,12 @@ export function exportResultToPdf(result) {
   // Cabeçalho
   doc.setFontSize(16);
   doc.setFont(undefined, "bold");
-  doc.text("Relatório de Avaliação — Life's Essential 8", 14, 20);
+  doc.text("Relatório de Avaliação — NATSA", 14, 20);
 
   doc.setFontSize(10);
   doc.setFont(undefined, "normal");
   doc.setTextColor(100);
-  doc.text("UniEVANGÉLICA — Universidade Evangélica de Goiás", 14, 27);
+  doc.text("Universidade Evangélica de Goiás - UniEVANGÉLICA", 14, 27);
   doc.text(`Data da avaliação: ${dateStr}`, 14, 33);
 
   // Score principal
@@ -77,7 +77,7 @@ function drawHeader(doc, title, subtitle) {
   doc.setFontSize(10);
   doc.setFont(undefined, "normal");
   doc.setTextColor(100);
-  doc.text("UniEVANGÉLICA — Universidade Evangélica de Goiás", 14, 27);
+  doc.text("Universidade Evangélica de Goiás - UniEVANGÉLICA", 14, 27);
   if (subtitle) {
     doc.text(subtitle, 14, 33);
   }
@@ -113,7 +113,7 @@ export function exportHistoryToPdf(history) {
 
   drawHeader(
     doc,
-    "Relatório Completo — Life's Essential 8",
+    "Relatório Completo — NATSA",
     `Gerado em: ${today} · ${history.length} avaliação(ões)`
   );
 

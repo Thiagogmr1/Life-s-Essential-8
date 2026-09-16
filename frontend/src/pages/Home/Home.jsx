@@ -10,18 +10,22 @@ export default function Home() {
   return (
     <main className="home">
       <div className="home__content">
-        <span className="home__eyebrow">
+
+          <img
+            src="/Natsa_logo.png"
+            alt="NATSA"
+            className="auth-card__logo"
+          />
+        {/* <span className="home__eyebrow">
           Baseado na diretriz da American Heart Association
-        </span>
+        </span> */}
 
         <h1 className="home__title">NATSA</h1>
 
         <PulseLine />
 
         <p className="home__lead">
-          Avalie sua saúde cardiovascular a partir de oito indicadores clínicos
-          e comportamentais reconhecidos internacionalmente. O resultado é
-          orientativo, não substitui avaliação médica.
+          Este teste é baseado no Life’s Essential 8™, da American Heart Association, que reúne indicadores de saúde cardiovascular.
         </p>
 
         <div className="home__actions">
@@ -41,8 +45,8 @@ export default function Home() {
         </div>
 
         <p className="home__disclaimer">
-          Esta ferramenta não realiza diagnóstico. Consulte um profissional de
-          saúde para interpretar seus resultados.
+          O resultado oferece uma referência sobre sua saúde cardiovascular e deve ser interpretado 
+          em conjunto com a avaliação de um profissional de saúde
         </p>
       </div>
     </main>

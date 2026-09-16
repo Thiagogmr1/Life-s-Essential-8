@@ -7,7 +7,7 @@ from app.database import get_session
 from app.models import Usuario
 from app.routers import usuarios, avaliacoes, estatisticas
 
-app = FastAPI(title="Life's Essential 8 API")
+app = FastAPI(title="NATSA API")
 
 # ENV deve ser "production" quando a universidade fizer o deploy —
 # controla CORS e a flag Secure do cookie de autenticação (ver auth.py).
@@ -34,7 +34,7 @@ app.include_router(estatisticas.router)
 
 @app.get("/")
 def read_root():
-    return {"status": "API do Life's Essential 8 no ar"}
+    return {"status": "API do NATSA no ar"}
 
 
 @app.get("/health/db")
