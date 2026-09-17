@@ -1,10 +1,11 @@
 # backend/app/routers/usuarios.py
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlmodel import Session, select
 from app.database import get_session
 from app.models import Usuario
 from app.schemas import UsuarioCadastro, UsuarioLogin, TokenResposta, UsuarioResposta
 from app.dependencies import get_usuario_atual
+from app.limiter import limiter
 from app.auth import (
     hash_senha,
     verificar_senha,
@@ -34,7 +35,9 @@ def _setar_cookie_auth(response: Response, usuario_id: str) -> None:
 
 
 @router.post("/cadastro", response_model=TokenResposta)
+@limiter.limit("5/minute")
 def cadastrar(
+    request: Request,
     dados: UsuarioCadastro,
     response: Response,
     session: Session = Depends(get_session),
@@ -63,7 +66,9 @@ def cadastrar(
 
 
 @router.post("/login", response_model=TokenResposta)
+@limiter.limit("5/minute")
 def login(
+    request: Request,
     dados: UsuarioLogin,
     response: Response,
     session: Session = Depends(get_session),
