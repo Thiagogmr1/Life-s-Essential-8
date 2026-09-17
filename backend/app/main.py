@@ -1,13 +1,26 @@
 # backend/app/main.py
 import os
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, func, select
+from slowapi.errors import RateLimitExceeded
 from app.database import get_session
 from app.models import Usuario
+from app.limiter import limiter
 from app.routers import usuarios, avaliacoes, estatisticas
 
 app = FastAPI(title="NATSA API")
+app.state.limiter = limiter
+
+
+@app.exception_handler(RateLimitExceeded)
+def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Muitas tentativas em pouco tempo. Aguarde um momento antes de tentar novamente."},
+    )
+
 
 # ENV deve ser "production" quando a universidade fizer o deploy —
 # controla CORS e a flag Secure do cookie de autenticação (ver auth.py).

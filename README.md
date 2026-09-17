@@ -207,11 +207,11 @@ docs: documentação
 - [x] Histórico de avaliações persistido no banco
 - [x] Exportação de relatórios (PDF e Excel)
 - [x] Painel administrativo com estatísticas e listagem de usuários
-- [x] Acessibilidade — widget VLibras integrado
+- [ ] Acessibilidade — widget VLibras (planejado para versão futura)
 - [ ] Deploy público (em desenvolvimento)
 - [ ] Termo de consentimento / conformidade LGPD
 - [ ] Recuperação de senha
-- [ ] Rate limiting nas rotas de autenticação
+- [x] Rate limiting nas rotas de autenticação (SlowAPI)
 
 ---
 

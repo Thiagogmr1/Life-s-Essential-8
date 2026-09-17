@@ -381,6 +381,7 @@ O cálculo dos scores no backend (`scoring.py` + `le8_criteria.py`) **espelha** 
 | Token | JWT HS256, expira em 7 dias, entregue via cookie httpOnly |
 | Isolamento de dados | `GET /avaliacoes` filtra por `usuario_id` do token — um usuário nunca acessa avaliações de outro |
 | Anti-enumeração | Mensagem de erro idêntica + hash dummy para timing constante |
+| Rate Limiting | Limite de 5 req/min por IP em `/usuarios/login` e `/usuarios/cadastro` via SlowAPI (HTTP 429) |
 | CORS | Dev: `localhost:5173`. Produção: origens configuráveis via `FRONTEND_URL` |
 | Admin | Rotas protegidas por `get_usuario_admin` (verifica `role == admin`) |
 
@@ -390,7 +391,7 @@ O cálculo dos scores no backend (`scoring.py` + `le8_criteria.py`) **espelha** 
 
 - [ ] Deploy público do backend (atualmente roda apenas local)
 - [ ] Endpoint de recuperação de senha
-- [ ] Rate limiting nas rotas de login/cadastro
+- [x] Rate limiting nas rotas de login/cadastro
 - [ ] Migrations automatizadas (atualmente as tabelas são criadas via SQLModel `create_all` ou SQL manual)
 - [ ] Fonte única de verdade para critérios LE8 (hoje é duplicado entre front e back)
 - [ ] Termo de consentimento / conformidade LGPD para dados sensíveis de saúde
