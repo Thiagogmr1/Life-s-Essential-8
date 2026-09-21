@@ -212,6 +212,23 @@ docs: documentação
 - [ ] Termo de consentimento / conformidade LGPD
 - [ ] Recuperação de senha
 - [x] Rate limiting nas rotas de autenticação (SlowAPI)
+- [x] Testes automatizados de pontuação (pytest no backend e vitest no frontend)
+
+---
+
+## Executando os Testes
+
+Para garantir a integridade dos cálculos do Life's Essential 8:
+
+```bash
+# Testes do Backend (Python / pytest):
+cd backend
+pytest -v
+
+# Testes do Frontend (JavaScript / Vitest):
+cd frontend
+npm test
+```
 
 ---
 
