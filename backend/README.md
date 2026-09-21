@@ -373,6 +373,19 @@ O cálculo dos scores no backend (`scoring.py` + `le8_criteria.py`) **espelha** 
 
 ---
 
+## Testes Automatizados
+
+O backend conta com uma suíte de testes unitários com **pytest** cobrindo todos os 8 domínios do LE8, casos limítrofes, penalidades de medicação e validação de erros (`DadosInsuficientesError`).
+
+Para rodar os testes:
+
+```bash
+# Na pasta backend/ com a venv ativa:
+pytest -v
+```
+
+---
+
 ## Segurança — Decisões Implementadas
 
 | Aspecto | Implementação |
