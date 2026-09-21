@@ -303,6 +303,22 @@ O widget VLibras (tradução para Libras) é integrado via script no `index.html
 
 ---
 
+## Testes Automatizados
+
+O frontend conta com uma suíte de testes unitários com **Vitest** cobrindo todas as funções de pontuação em `src/utils/scoring.js`, garantindo paridade com as regras do backend.
+
+Para rodar os testes:
+
+```bash
+# Executar todos os testes uma vez:
+npm test
+
+# Executar em modo watch (re-executa ao salvar):
+npm run test:watch
+```
+
+---
+
 ## Deploy
 
 O frontend é publicado na **Vercel**, com `Root Directory` configurado como `frontend`. O arquivo `vercel.json` configura um rewrite para que todas as rotas do React Router funcionem corretamente em refresh de página:
