@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { ApiError } from "../../utils/api";
+import "../auth-shared.css";
 import "./Login.css";
 
 export default function Login() {

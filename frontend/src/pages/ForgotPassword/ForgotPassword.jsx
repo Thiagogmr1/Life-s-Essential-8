@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Mail, ArrowLeft } from "lucide-react";
 import { api, ApiError } from "../../utils/api";
+import "../auth-shared.css";
 import "./ForgotPassword.css";
 
 export default function ForgotPassword() {
@@ -32,7 +33,7 @@ export default function ForgotPassword() {
   }
 
   return (
-    <main className="auth-page">
+    <main className="auth-page forgot-password">
       <section className="auth-page__image">
         <img
           src="/images/login.png"
@@ -50,12 +51,12 @@ export default function ForgotPassword() {
           <img src="/Natsa_logo.svg" alt="NATSA" className="auth-card__logo" />
 
           <h1 className="auth-card__title">Recuperar Senha</h1>
-          <p className="auth-card__subtitle">
+          <p className="auth-card__description">   {/* era auth-card__subtitle */}
             Informe o e-mail cadastrado e enviaremos um link para você redefinir sua senha.
           </p>
 
           {erro && (
-            <div className="auth-card__alert auth-card__alert--error">
+            <div className="auth-card__error">      {/* era auth-card__alert auth-card__alert--error */}
               {erro}
             </div>
           )}
@@ -67,7 +68,6 @@ export default function ForgotPassword() {
 
           {!sucesso && (
             <form onSubmit={handleSubmit} className="auth-card__form">
-              <div className="auth-card__input-group">
 
                 <div className="auth-card__input-wrapper">
                   <Mail className="auth-card__input-icon" size={20} />
@@ -80,7 +80,6 @@ export default function ForgotPassword() {
                     required
                   />
                 </div>
-              </div>
 
               <button
                 type="submit"
@@ -93,6 +92,7 @@ export default function ForgotPassword() {
           )}
         </div>
       </section>
+      
     </main>
   );
 }
