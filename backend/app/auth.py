@@ -48,3 +48,19 @@ def decodificar_token(token: str) -> str | None:
         return payload.get("sub")
     except jwt.PyJWTError:
         return None
+
+
+def criar_token_reset_senha(usuario_id: str) -> str:
+    expira_em = datetime.now(timezone.utc) + timedelta(minutes=30)
+    payload = {"sub": usuario_id, "exp": expira_em, "purpose": "reset"}
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def decodificar_token_reset_senha(token: str) -> str | None:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("purpose") != "reset":
+            return None
+        return payload.get("sub")
+    except jwt.PyJWTError:
+        return None

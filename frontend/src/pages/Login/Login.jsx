@@ -113,6 +113,11 @@ export default function Login() {
             {mostrarSenha ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
         </div>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "0.5rem" }}>
+          <Link to="/esqueci-senha" style={{ fontSize: "0.82rem", color: "var(--primary-color)", marginTop:"0.3rem", textDecoration: "none", fontWeight: "500" }}>
+            Esqueci minha senha
+          </Link>
+        </div>
       </div>
 
       <button
