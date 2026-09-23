@@ -65,9 +65,9 @@ export default function Login() {
     Conhecer para preservar
   </p>
 
-  <span className="auth-card__badge">
+  {/* <span className="auth-card__badge">
     BASEADO NA DIRETRIZ DA AMERICAN HEART ASSOCIATION
-  </span>
+  </span> */}
   
   {erro && (
     <div className="auth-card__error">
