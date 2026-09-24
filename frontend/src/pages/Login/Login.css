@@ -353,24 +353,18 @@
   font-size: 0.82rem;
 }
 
-.auth-card__footer a {
-  color: var(--brand);
-
-  font-weight: 600;
-
+.auth-card__forgot-link {
+  font-size: 0.82rem;
+  color: var(--primary-color);
+  margin-top: 0.3rem;
   text-decoration: none;
+  font-weight: 500;
+  transition: text-decoration 0.2s ease;
 }
 
-.auth-card__footer a:hover {
+.auth-card__forgot-link:hover {
   text-decoration: underline;
 }
-
-.auth-card__footer a:focus-visible {
-  outline: 2px solid var(--uni-sky);
-  outline-offset: 2px;
-  border-radius: 2px;
-}
-
 
 /* ─────────────────────────────
    ERRO
