@@ -35,6 +35,14 @@ class UsuarioLogin(BaseModel):
     senha: str
 
 
+class EsqueciSenhaRequisicao(BaseModel):
+    email: EmailStr
+
+
+class RedefinirSenhaRequisicao(BaseModel):
+    nova_senha: str = Field(min_length=8, max_length=72)
+
+
 class UsuarioResposta(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

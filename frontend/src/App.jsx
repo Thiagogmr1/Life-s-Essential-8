@@ -7,6 +7,8 @@ import Header from "./components/Header/Header";
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import Cadastro from "./pages/Cadastro/Cadastro";
+import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword/ResetPassword";
 import Questionnaire from "./pages/Questionnaire/Questionnaire";
 import Results from "./pages/Results/Results";
 import History from "./pages/History/History";
@@ -51,6 +53,22 @@ function App() {
             element={
               <PublicRoute>
                 <Cadastro />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/esqueci-senha"
+            element={
+              <PublicRoute>
+                <ForgotPassword />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/redefinir-senha/:token"
+            element={
+              <PublicRoute>
+                <ResetPassword />
               </PublicRoute>
             }
           />

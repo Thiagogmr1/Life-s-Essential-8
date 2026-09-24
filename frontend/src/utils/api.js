@@ -54,6 +54,18 @@ export const api = {
   
     logout: () => request("/usuarios/logout", { method: "POST" }),
   
+    esqueciSenha: (email) =>
+      request("/usuarios/forgot-password", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      }),
+  
+    redefinirSenha: (token, novaSenha) =>
+      request(`/usuarios/reset-password/${token}`, {
+        method: "POST",
+        body: JSON.stringify({ nova_senha: novaSenha }),
+      }),
+  
     obterUsuarioAtual: () => request("/usuarios/me"),
   
     criarAvaliacao: (respostasBrutas) =>
