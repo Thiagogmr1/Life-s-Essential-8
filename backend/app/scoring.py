@@ -3,9 +3,15 @@
 Motor de cálculo do Life's Essential 8 — espelha src/utils/scoring.js.
 
 Diferente do front-end, este módulo é a FONTE DA VERDADE dos scores
-salvos no banco. O front pode continuar calculando localmente (para
-feedback instantâneo na UI), mas o que é persistido vem sempre daqui.
+salvos no banco e também dos scores exibidos na tela: o front chama
+calculateFullAssessment() só para validação (dispara
+DadosInsuficientesError se faltar peso/altura), mas descarta o
+resultado — quem popula a UI é sempre a resposta da API. Ou seja,
+qualquer bug de cálculo aqui É o bug que o usuário vê; não há uma
+camada "de verdade" mais autoritativa que esta.
 """
+import math
+
 from app.le8_criteria import (
     DIET_ITEMS,
     DIET_SCORE_THRESHOLDS,
@@ -117,8 +123,15 @@ def score_blood_pressure(systolic: float, diastolic: float, is_on_medication: bo
 
 
 def calculate_composite_score(domain_scores: dict) -> int:
+    """
+    CORRIGIDO: round() nativo do Python usa "arredondamento bancário"
+    (arredonda .5 para o par mais próximo — 92.5 vira 92, não 93).
+    Isso divergia do Math.round() do JS (que sempre arredonda .5 para
+    cima) e do texto da metodologia ("arredonda para o número inteiro
+    mais próximo"). math.floor(x + 0.5) replica o comportamento do JS.
+    """
     values = list(domain_scores.values())
-    return round(sum(values) / len(values))
+    return math.floor(sum(values) / len(values) + 0.5)
 
 
 def classify_score(composite_score: int) -> str:
