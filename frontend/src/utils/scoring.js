@@ -6,6 +6,7 @@ import {
   DIET_ITEMS,
   DIET_SCORE_THRESHOLDS,
   NICOTINE_OPTIONS,
+  SECONDHAND_SMOKE_PENALTY,
   SLEEP_THRESHOLDS,
   PHYSICAL_ACTIVITY_THRESHOLDS,
   BMI_THRESHOLDS,
@@ -38,9 +39,13 @@ export function scorePhysicalActivity(minutesPerWeek) {
   return tier ? tier.points : 0;
 }
 
-export function scoreNicotine(optionValue) {
+// CORRIGIDO: adicionado parâmetro livesWithSmoker — desconto de
+// SECONDHAND_SMOKE_PENALTY (20 pontos) para quem mora com fumante(s)
+// em casa, conforme o texto do protocolo (não estava implementado).
+export function scoreNicotine(optionValue, livesWithSmoker = false) {
   const opt = NICOTINE_OPTIONS.find((o) => o.value === optionValue);
-  return opt ? opt.points : 0;
+  const base = opt ? opt.points : 0;
+  return livesWithSmoker ? clamp(base - SECONDHAND_SMOKE_PENALTY) : base;
 }
 
 export function scoreSleep(hoursPerNight) {
@@ -83,11 +88,17 @@ export function scoreBloodGlucose({ fastingGlucose, hba1c, isOnMedication = fals
   return isOnMedication ? clamp(base - MEDICATION_PENALTY) : base;
 }
 
-export function scoreBloodPressure(systolic, diastolic) {
+// CORRIGIDO: adicionado parâmetro isOnMedication — desconto de
+// MEDICATION_PENALTY (20 pontos) para quem está em tratamento
+// anti-hipertensivo, conforme o protocolo ("Se estiver em tratamento
+// subtrair 20 pontos"). Antes não existia esse desconto aqui, embora
+// já existisse para lipídeos e glicemia.
+export function scoreBloodPressure(systolic, diastolic, isOnMedication = false) {
   const tier = BLOOD_PRESSURE_THRESHOLDS.find(
     (t) => systolic < t.sys && diastolic < t.dia
   );
-  return tier ? tier.points : 0;
+  const base = tier ? tier.points : 0;
+  return isOnMedication ? clamp(base - MEDICATION_PENALTY) : base;
 }
 
 export function calculateCompositeScore(domainScores) {
@@ -109,7 +120,7 @@ export function calculateFullAssessment(rawAnswers) {
   const domainScores = {
     diet: scoreDiet(rawAnswers.diet),
     physicalActivity: scorePhysicalActivity(rawAnswers.physicalActivityMinutes),
-    nicotineExposure: scoreNicotine(rawAnswers.nicotineStatus),
+    nicotineExposure: scoreNicotine(rawAnswers.nicotineStatus, rawAnswers.livesWithSmoker),
     sleep: scoreSleep(rawAnswers.sleepHours),
     bmi: scoreBmi(bmi),
     bloodLipids: scoreBloodLipids(rawAnswers.nonHdlCholesterol, rawAnswers.lipidsMedication),
@@ -118,7 +129,11 @@ export function calculateFullAssessment(rawAnswers) {
       hba1c: rawAnswers.hba1c,
       isOnMedication: rawAnswers.glucoseMedication,
     }),
-    bloodPressure: scoreBloodPressure(rawAnswers.systolic, rawAnswers.diastolic),
+    bloodPressure: scoreBloodPressure(
+      rawAnswers.systolic,
+      rawAnswers.diastolic,
+      rawAnswers.bloodPressureMedication
+    ),
   };
 
   const compositeScore = calculateCompositeScore(domainScores);

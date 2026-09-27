@@ -121,13 +121,21 @@ describe("Motor de Cálculo do Life's Essential 8 — Frontend", () => {
       expect(scoreNicotine("invalido")).toBe(0);
       expect(scoreNicotine("")).toBe(0);
     });
+
+    // NOVO: cobertura da exposição passiva (não existia nenhum teste antes)
+    it("deve descontar 20 pontos por exposição passiva (mora com fumante)", () => {
+      expect(scoreNicotine("never", true)).toBe(80); // 100 - 20
+      expect(scoreNicotine("quit_5y", true)).toBe(55); // 75 - 20
+      expect(scoreNicotine("smoker", true)).toBe(0); // 0 - 20, clamp em 0
+      expect(scoreNicotine("never", false)).toBe(100); // sem desconto
+    });
   });
 
   // ============================================================================
   // 4. Sono (scoreSleep)
   // ============================================================================
   describe("scoreSleep", () => {
-    it("deve calcular a pontuação respeitando a ordem e faixas de horas por noite", () => {
+    it("deve calcular a pontuação respeitando as faixas de horas por noite", () => {
       // 7 <= h < 9 -> 100
       expect(scoreSleep(8)).toBe(100);
       expect(scoreSleep(7)).toBe(100);
@@ -137,25 +145,25 @@ describe("Motor de Cálculo do Life's Essential 8 — Frontend", () => {
       expect(scoreSleep(9)).toBe(90);
       expect(scoreSleep(9.5)).toBe(90);
 
-      // 6 <= h < 7 -> 90
-      expect(scoreSleep(6.5)).toBe(90);
-      expect(scoreSleep(6)).toBe(90);
+      // 6 <= h < 7 -> 70 (corrigido; era 90 no bug anterior)
+      expect(scoreSleep(6.5)).toBe(70);
+      expect(scoreSleep(6)).toBe(70);
 
-      // 5 <= h < 6 -> 70
-      expect(scoreSleep(5.5)).toBe(70);
-      expect(scoreSleep(5)).toBe(70);
+      // 5 <= h < 6 -> 40 (corrigido; era 70 no bug anterior)
+      expect(scoreSleep(5.5)).toBe(40);
+      expect(scoreSleep(5)).toBe(40);
 
-      // >= 10 -> 70
-      expect(scoreSleep(10)).toBe(70);
-      expect(scoreSleep(12)).toBe(70);
+      // >= 10 -> 40 (corrigido; era 70 no bug anterior)
+      expect(scoreSleep(10)).toBe(40);
+      expect(scoreSleep(12)).toBe(40);
 
-      // 4 <= h < 5 -> 40
-      expect(scoreSleep(4.5)).toBe(40);
-      expect(scoreSleep(4)).toBe(40);
+      // 4 <= h < 5 -> 20 (corrigido; era 40 no bug anterior)
+      expect(scoreSleep(4.5)).toBe(20);
+      expect(scoreSleep(4)).toBe(20);
 
-      // 0 <= h < 4 -> 20
-      expect(scoreSleep(3)).toBe(20);
-      expect(scoreSleep(0)).toBe(20);
+      // 0 <= h < 4 -> 0 (corrigido; era 20 no bug anterior, e esse tier nem existia)
+      expect(scoreSleep(3)).toBe(0);
+      expect(scoreSleep(0)).toBe(0);
     });
   });
 
@@ -214,16 +222,32 @@ describe("Motor de Cálculo do Life's Essential 8 — Frontend", () => {
   // 7. Glicemia (scoreBloodGlucose)
   // ============================================================================
   describe("scoreBloodGlucose", () => {
-    it("deve pontuar via glicemia de jejum com e sem medicação", () => {
+    it("deve pontuar via glicemia de jejum com e sem medicação (faixas baixas)", () => {
       expect(scoreBloodGlucose({ fastingGlucose: 90, isOnMedication: false })).toBe(100);
       expect(scoreBloodGlucose({ fastingGlucose: 90, isOnMedication: true })).toBe(80);
       expect(scoreBloodGlucose({ fastingGlucose: 110, isOnMedication: false })).toBe(60);
       expect(scoreBloodGlucose({ fastingGlucose: 110, isOnMedication: true })).toBe(40);
     });
 
+    // NOVO: cobertura acima de 126 mg/dL — era exatamente a zona onde o
+    // bug do maxFbg=Infinity em cascata escondia o problema. Antes,
+    // TODOS esses casos retornavam 40.
+    it("deve pontuar via glicemia de jejum em todas as faixas acima de 126 mg/dL", () => {
+      expect(scoreBloodGlucose({ fastingGlucose: 140, isOnMedication: false })).toBe(40); // 126-153
+      expect(scoreBloodGlucose({ fastingGlucose: 160, isOnMedication: false })).toBe(30); // 154-169
+      expect(scoreBloodGlucose({ fastingGlucose: 180, isOnMedication: false })).toBe(20); // 170-187
+      expect(scoreBloodGlucose({ fastingGlucose: 200, isOnMedication: false })).toBe(10); // 188-226
+      expect(scoreBloodGlucose({ fastingGlucose: 230, isOnMedication: false })).toBe(0); // >= 227
+    });
+
     it("deve pontuar via HbA1c com todas as faixas", () => {
       expect(scoreBloodGlucose({ hba1c: 5.4 })).toBe(100);
       expect(scoreBloodGlucose({ hba1c: 6.0 })).toBe(60);
+      // NOVO: caso de fronteira 6.4 vs 6.5 — o corte correto do
+      // protocolo é 6.4%, não 6.5% (valor antigo era inconsistente
+      // com o Quadro 5)
+      expect(scoreBloodGlucose({ hba1c: 6.4 })).toBe(60);
+      expect(scoreBloodGlucose({ hba1c: 6.45 })).toBe(40);
       expect(scoreBloodGlucose({ hba1c: 6.8 })).toBe(40);
       expect(scoreBloodGlucose({ hba1c: 7.5 })).toBe(30);
       expect(scoreBloodGlucose({ hba1c: 8.5 })).toBe(20);
@@ -247,7 +271,7 @@ describe("Motor de Cálculo do Life's Essential 8 — Frontend", () => {
   // 8. Pressão Arterial (scoreBloodPressure)
   // ============================================================================
   describe("scoreBloodPressure", () => {
-    it("deve pontuar com base nos patamares sistólico e diastólico", () => {
+    it("deve pontuar com base nos patamares sistólico e diastólico, sem medicação", () => {
       expect(scoreBloodPressure(115, 75)).toBe(100); // < 120 e < 80
       expect(scoreBloodPressure(120, 75)).toBe(75); // sys >= 120
       expect(scoreBloodPressure(125, 78)).toBe(75);
@@ -256,6 +280,16 @@ describe("Motor de Cálculo do Life's Essential 8 — Frontend", () => {
       expect(scoreBloodPressure(150, 95)).toBe(25); // < 160 e < 100
       expect(scoreBloodPressure(170, 105)).toBe(0); // >= 160 ou >= 100
       expect(scoreBloodPressure(170, 75)).toBe(0); // sys >= 160
+    });
+
+    // NOVO: cobertura do desconto por tratamento anti-hipertensivo —
+    // não existia nenhum teste antes, e o parâmetro nem existia na função.
+    it("deve aplicar penalidade de 20 pontos se em tratamento anti-hipertensivo", () => {
+      expect(scoreBloodPressure(115, 75, true)).toBe(80); // 100 - 20
+      expect(scoreBloodPressure(125, 78, true)).toBe(55); // 75 - 20
+      expect(scoreBloodPressure(135, 85, true)).toBe(30); // 50 - 20
+      expect(scoreBloodPressure(150, 95, true)).toBe(5); // 25 - 20
+      expect(scoreBloodPressure(170, 105, true)).toBe(0); // clamp em 0
     });
   });
 
@@ -320,6 +354,7 @@ describe("Motor de Cálculo do Life's Essential 8 — Frontend", () => {
         },
         physicalActivityMinutes: 180,
         nicotineStatus: "never",
+        livesWithSmoker: false,
         sleepHours: 8,
         nonHdlCholesterol: 110,
         lipidsMedication: false,
@@ -327,6 +362,7 @@ describe("Motor de Cálculo do Life's Essential 8 — Frontend", () => {
         glucoseMedication: false,
         systolic: 115,
         diastolic: 75,
+        bloodPressureMedication: false,
       };
 
       const result = calculateFullAssessment(rawAnswers);
@@ -350,6 +386,32 @@ describe("Motor de Cálculo do Life's Essential 8 — Frontend", () => {
           heightM: 1.75,
         })
       ).toThrow(DadosInsuficientesError);
+    });
+
+    // NOVO: cobertura de ponta a ponta com os campos de desconto ativos
+    it("deve aplicar todos os descontos (fumante passivo, medicação PA/lipídeos/glicemia) no fluxo completo", () => {
+      const rawAnswers = {
+        weightKg: 65,
+        heightM: 1.75,
+        diet: {},
+        physicalActivityMinutes: 0,
+        nicotineStatus: "never",
+        livesWithSmoker: true,
+        sleepHours: 8,
+        nonHdlCholesterol: 110,
+        lipidsMedication: true,
+        fastingGlucose: 85,
+        glucoseMedication: true,
+        systolic: 115,
+        diastolic: 75,
+        bloodPressureMedication: true,
+      };
+
+      const result = calculateFullAssessment(rawAnswers);
+      expect(result.domainScores.nicotineExposure).toBe(80); // 100 - 20 (passivo)
+      expect(result.domainScores.bloodLipids).toBe(80); // 100 - 20 (medicação)
+      expect(result.domainScores.bloodGlucose).toBe(80); // 100 - 20 (medicação)
+      expect(result.domainScores.bloodPressure).toBe(80); // 100 - 20 (medicação)
     });
   });
 });

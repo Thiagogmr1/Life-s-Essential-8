@@ -10,6 +10,7 @@ from app.le8_criteria import (
     DIET_ITEMS,
     DIET_SCORE_THRESHOLDS,
     NICOTINE_OPTIONS,
+    SECONDHAND_SMOKE_PENALTY,
     SLEEP_THRESHOLDS,
     PHYSICAL_ACTIVITY_THRESHOLDS,
     BMI_THRESHOLDS,
@@ -43,13 +44,18 @@ def score_physical_activity(minutes_per_week: float) -> int:
     return tier["points"] if tier else 0
 
 
-def score_nicotine(option_value: str) -> int:
+def score_nicotine(option_value: str, lives_with_smoker: bool = False) -> int:
+    """
+    CORRIGIDO: adicionado parâmetro lives_with_smoker — desconto de
+    SECONDHAND_SMOKE_PENALTY (20 pontos) para quem mora com fumante(s)
+    em casa, conforme o texto do protocolo (não estava implementado).
+    """
     opt = next((o for o in NICOTINE_OPTIONS if o["value"] == option_value), None)
-    return opt["points"] if opt else 0
+    base = opt["points"] if opt else 0
+    return clamp(base - SECONDHAND_SMOKE_PENALTY) if lives_with_smoker else base
 
 
 def score_sleep(hours_per_night: float) -> int:
-    # A ordem de SLEEP_THRESHOLDS é significativa — não reordenar.
     tier = next(
         (t for t in SLEEP_THRESHOLDS if t["min"] <= hours_per_night < t["max"]),
         None,
@@ -94,12 +100,20 @@ def score_blood_glucose(
     return clamp(base - MEDICATION_PENALTY) if is_on_medication else base
 
 
-def score_blood_pressure(systolic: float, diastolic: float) -> int:
+def score_blood_pressure(systolic: float, diastolic: float, is_on_medication: bool = False) -> int:
+    """
+    CORRIGIDO: adicionado parâmetro is_on_medication — desconto de
+    MEDICATION_PENALTY (20 pontos) para quem está em tratamento
+    anti-hipertensivo, conforme o protocolo ("Se estiver em tratamento
+    subtrair 20 pontos"). Antes não existia esse desconto aqui, embora
+    já existisse para lipídeos e glicemia.
+    """
     tier = next(
         (t for t in BLOOD_PRESSURE_THRESHOLDS if systolic < t["sys"] and diastolic < t["dia"]),
         None,
     )
-    return tier["points"] if tier else 0
+    base = tier["points"] if tier else 0
+    return clamp(base - MEDICATION_PENALTY) if is_on_medication else base
 
 
 def calculate_composite_score(domain_scores: dict) -> int:
@@ -124,7 +138,10 @@ def calculate_full_assessment(raw_answers: dict) -> dict:
     domain_scores = {
         "diet": score_diet(raw_answers.get("diet", {})),
         "physicalActivity": score_physical_activity(raw_answers.get("physicalActivityMinutes", 0)),
-        "nicotineExposure": score_nicotine(raw_answers.get("nicotineStatus")),
+        "nicotineExposure": score_nicotine(
+            raw_answers.get("nicotineStatus"),
+            raw_answers.get("livesWithSmoker", False),
+        ),
         "sleep": score_sleep(raw_answers.get("sleepHours", 0)),
         "bmi": score_bmi(bmi),
         "bloodLipids": score_blood_lipids(
@@ -139,6 +156,7 @@ def calculate_full_assessment(raw_answers: dict) -> dict:
         "bloodPressure": score_blood_pressure(
             raw_answers.get("systolic"),
             raw_answers.get("diastolic"),
+            raw_answers.get("bloodPressureMedication", False),
         ),
     }
 
