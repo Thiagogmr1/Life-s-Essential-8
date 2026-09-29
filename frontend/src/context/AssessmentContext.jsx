@@ -10,6 +10,7 @@ const initialAnswers = {
   diet: {},
   physicalActivityMinutes: null,
   nicotineStatus: null,
+  livesWithSmoker: false, // NOVO: exposição passiva ao tabagismo
   sleepHours: null,
   weightKg: null,
   heightM: null,
@@ -20,6 +21,7 @@ const initialAnswers = {
   glucoseMedication: false,
   systolic: null,
   diastolic: null,
+  bloodPressureMedication: false, // NOVO: tratamento anti-hipertensivo
 };
 
 export function AssessmentProvider({ children }) {

@@ -34,6 +34,19 @@ export const QUESTIONNAIRE_STEPS = [
     label: "Qual sua situação em relação ao tabagismo?",
     options: NICOTINE_OPTIONS,
   },
+  // NOVO: exposição passiva ao tabagismo — desconta 20 pontos do
+  // domínio Tabagismo (ver SECONDHAND_SMOKE_PENALTY em le8Criteria.js).
+  // Pergunta solta, não embutida no passo de nicotina, porque usa um
+  // tipo de input genérico (checkbox) reutilizável por outras perguntas
+  // sim/não que possam surgir no futuro.
+  {
+    id: "secondhandSmoke",
+    domain: "nicotineExposure",
+    type: "checkbox",
+    field: "livesWithSmoker",
+    label: "Você mora com alguém que fuma dentro de casa?",
+    checkboxLabel: "Sim, moro com fumante(s) em casa",
+  },
   {
     id: "sleep",
     domain: "sleep",
