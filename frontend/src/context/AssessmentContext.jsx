@@ -8,7 +8,8 @@ const AssessmentContext = createContext(null);
 
 const initialAnswers = {
   diet: {},
-  physicalActivityMinutes: null,
+  moderateActivityMinutes: null, // NOVO: separado de vigorousActivityMinutes
+  vigorousActivityMinutes: null,
   nicotineStatus: null,
   livesWithSmoker: false, // NOVO: exposição passiva ao tabagismo
   sleepHours: null,

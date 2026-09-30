@@ -32,9 +32,15 @@ export function scoreDiet(answers) {
   return tier ? tier.points : 0;
 }
 
-export function scorePhysicalActivity(minutesPerWeek) {
+// CORRIGIDO: agora recebe minutos moderados e vigorosos separados (a
+// pedido da orientadora). Combina em "minutos equivalentes" usando a
+// equivalência padrão OMS/AHA: 1 minuto vigoroso conta como 2 minutos
+// moderados (coerente com "150 min moderados OU 75 min vigorosos" das
+// recomendações — 75x2=150). Depois aplica os mesmos tiers de sempre.
+export function scorePhysicalActivity(moderateMinutes = 0, vigorousMinutes = 0) {
+  const equivalentMinutes = (moderateMinutes ?? 0) + 2 * (vigorousMinutes ?? 0);
   const tier = PHYSICAL_ACTIVITY_THRESHOLDS.find(
-    (t) => minutesPerWeek >= t.min && minutesPerWeek < t.max
+    (t) => equivalentMinutes >= t.min && equivalentMinutes < t.max
   );
   return tier ? tier.points : 0;
 }
@@ -119,7 +125,10 @@ export function calculateFullAssessment(rawAnswers) {
 
   const domainScores = {
     diet: scoreDiet(rawAnswers.diet),
-    physicalActivity: scorePhysicalActivity(rawAnswers.physicalActivityMinutes),
+    physicalActivity: scorePhysicalActivity(
+      rawAnswers.moderateActivityMinutes,
+      rawAnswers.vigorousActivityMinutes
+    ),
     nicotineExposure: scoreNicotine(rawAnswers.nicotineStatus, rawAnswers.livesWithSmoker),
     sleep: scoreSleep(rawAnswers.sleepHours),
     bmi: scoreBmi(bmi),

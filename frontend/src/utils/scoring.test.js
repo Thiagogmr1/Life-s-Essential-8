@@ -81,21 +81,30 @@ describe("Motor de Cálculo do Life's Essential 8 — Frontend", () => {
   // 2. Atividade Física (scorePhysicalActivity)
   // ============================================================================
   describe("scorePhysicalActivity", () => {
-    it("deve atribuir notas de acordo com os minutos de exercício semanais", () => {
-      expect(scorePhysicalActivity(200)).toBe(100);
-      expect(scorePhysicalActivity(150)).toBe(100);
-      expect(scorePhysicalActivity(149)).toBe(90);
-      expect(scorePhysicalActivity(120)).toBe(90);
-      expect(scorePhysicalActivity(119)).toBe(80);
-      expect(scorePhysicalActivity(90)).toBe(80);
-      expect(scorePhysicalActivity(89)).toBe(60);
-      expect(scorePhysicalActivity(60)).toBe(60);
-      expect(scorePhysicalActivity(59)).toBe(40);
-      expect(scorePhysicalActivity(30)).toBe(40);
-      expect(scorePhysicalActivity(29)).toBe(20);
-      expect(scorePhysicalActivity(1)).toBe(20);
-      expect(scorePhysicalActivity(0)).toBe(0);
-      expect(scorePhysicalActivity(-10)).toBe(0);
+    it("deve pontuar pelos minutos moderados sozinhos (vigorosa=0), mesmos tiers de antes", () => {
+      expect(scorePhysicalActivity(200, 0)).toBe(100);
+      expect(scorePhysicalActivity(150, 0)).toBe(100);
+      expect(scorePhysicalActivity(149, 0)).toBe(90);
+      expect(scorePhysicalActivity(120, 0)).toBe(90);
+      expect(scorePhysicalActivity(119, 0)).toBe(80);
+      expect(scorePhysicalActivity(90, 0)).toBe(80);
+      expect(scorePhysicalActivity(89, 0)).toBe(60);
+      expect(scorePhysicalActivity(60, 0)).toBe(60);
+      expect(scorePhysicalActivity(59, 0)).toBe(40);
+      expect(scorePhysicalActivity(30, 0)).toBe(40);
+      expect(scorePhysicalActivity(29, 0)).toBe(20);
+      expect(scorePhysicalActivity(1, 0)).toBe(20);
+      expect(scorePhysicalActivity(0, 0)).toBe(0);
+    });
+
+    // NOVO: cobertura da equivalência OMS/AHA — 1 min vigorosa = 2 min moderada
+    it("deve aplicar a equivalência 1 min vigorosa = 2 min moderada", () => {
+      expect(scorePhysicalActivity(0, 75)).toBe(100); // 75x2=150 -> teto
+      expect(scorePhysicalActivity(0, 76)).toBe(100); // 152 equivalentes
+      expect(scorePhysicalActivity(0, 74)).toBe(90); // 148 equivalentes
+      expect(scorePhysicalActivity(30, 30)).toBe(80); // 30 + 60 = 90 equivalentes -> tier 90-120
+      expect(scorePhysicalActivity(50, 50)).toBe(100); // 50 + 100 = 150 -> teto
+      expect(scorePhysicalActivity(0, 0)).toBe(0);
     });
   });
 
@@ -346,7 +355,8 @@ describe("Motor de Cálculo do Life's Essential 8 — Frontend", () => {
           azeite: 5,
           alcool: 5,
         },
-        physicalActivityMinutes: 180,
+        moderateActivityMinutes: 180,
+        vigorousActivityMinutes: 0,
         nicotineStatus: "never",
         livesWithSmoker: false,
         sleepHours: 8,
@@ -388,7 +398,8 @@ describe("Motor de Cálculo do Life's Essential 8 — Frontend", () => {
         weightKg: 65,
         heightM: 1.75,
         diet: {},
-        physicalActivityMinutes: 0,
+        moderateActivityMinutes: 0,
+        vigorousActivityMinutes: 0,
         nicotineStatus: "never",
         livesWithSmoker: true,
         sleepHours: 8,

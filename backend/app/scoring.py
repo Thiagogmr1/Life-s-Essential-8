@@ -42,9 +42,15 @@ def score_diet(answers: dict) -> int:
     return tier["points"] if tier else 0
 
 
-def score_physical_activity(minutes_per_week: float) -> int:
+def score_physical_activity(moderate_minutes: float = 0, vigorous_minutes: float = 0) -> int:
+    """
+    CORRIGIDO: agora recebe minutos moderados e vigorosos separados.
+    Combina em "minutos equivalentes" usando a equivalência OMS/AHA:
+    1 minuto vigoroso conta como 2 minutos moderados.
+    """
+    equivalent_minutes = (moderate_minutes or 0) + 2 * (vigorous_minutes or 0)
     tier = next(
-        (t for t in PHYSICAL_ACTIVITY_THRESHOLDS if t["min"] <= minutes_per_week < t["max"]),
+        (t for t in PHYSICAL_ACTIVITY_THRESHOLDS if t["min"] <= equivalent_minutes < t["max"]),
         None,
     )
     return tier["points"] if tier else 0
@@ -150,7 +156,10 @@ def calculate_full_assessment(raw_answers: dict) -> dict:
 
     domain_scores = {
         "diet": score_diet(raw_answers.get("diet", {})),
-        "physicalActivity": score_physical_activity(raw_answers.get("physicalActivityMinutes", 0)),
+        "physicalActivity": score_physical_activity(
+            raw_answers.get("moderateActivityMinutes", 0),
+            raw_answers.get("vigorousActivityMinutes", 0),
+        ),
         "nicotineExposure": score_nicotine(
             raw_answers.get("nicotineStatus"),
             raw_answers.get("livesWithSmoker", False),
