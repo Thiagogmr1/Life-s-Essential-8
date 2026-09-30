@@ -102,7 +102,7 @@ export function exportEstatisticasToPdf(resumo, usuarios) {
 
     const sexoRows = resumo.media_por_sexo.map((item) => [
       SEXO_LABELS[item.sexo] || item.sexo,
-      item.score_medio,
+      typeof item.score_medio === "number" ? item.score_medio.toFixed(1) : item.score_medio,
       item.quantidade,
     ]);
 

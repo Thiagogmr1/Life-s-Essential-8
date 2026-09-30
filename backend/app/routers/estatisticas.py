@@ -135,7 +135,7 @@ def resumo_estatisticas(session: Session = Depends(get_session)):
             media_por_sexo.append(
                 MediaPorSexo(
                     sexo=sexo,
-                    score_medio=sum(a.score_total for a in avaliacoes_sexo) / len(avaliacoes_sexo),
+                    score_medio=round(sum(a.score_total for a in avaliacoes_sexo) / len(avaliacoes_sexo), 1),
                     quantidade=len(avaliacoes_sexo),
                 )
             )
