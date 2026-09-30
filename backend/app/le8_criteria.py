@@ -16,30 +16,36 @@ Espelha 1:1 os valores de src/data/le8Criteria.js do front-end.
 Qualquer alteração aqui DEVE ser replicada no front, e vice-versa,
 até que exista uma fonte única de verdade compartilhada.
 
-LIMITAÇÃO METODOLÓGICA (documentar no TCC):
-O domínio "Dieta" (DIET_ITEMS, 8 perguntas, 0-16 pontos) é um PROXY
-SIMPLIFICADO inspirado nos princípios DASH/Mediterrâneo — NÃO é o
-instrumento validado de 11 itens (0-55 pontos) do protocolo (Quadro 3).
-Reprodução fiel do instrumento validado ainda está pendente.
+Domínio "Dieta": Questionário de Frequência Alimentar da Dieta do
+Mediterrâneo, adaptado (Panagiotakos et al., 2006, Anexo 1 do
+protocolo). 11 itens, 0-55 pontos. Substituiu o proxy simplificado de
+8 itens usado nas versões anteriores.
 """
 
+# Os pontos de cada item já vêm ajustados pela escala (normal ou
+# invertida) do lado do front — este arquivo só soma por id, igual
+# fazia com o proxy antigo. Ver src/data/le8Criteria.js para o
+# detalhamento de cada item e suas opções.
 DIET_ITEMS = [
-    {"id": "fruitsVeggies"},
-    {"id": "wholeGrains"},
-    {"id": "fish"},
-    {"id": "sodium"},
-    {"id": "sugaryDrinks"},
-    {"id": "redMeat"},
-    {"id": "nutsLegumes"},
-    {"id": "fatType"},
+    {"id": "cereaisNaoRefinados"},
+    {"id": "batatas"},
+    {"id": "frutas"},
+    {"id": "verduras"},
+    {"id": "legumes"},
+    {"id": "peixe"},
+    {"id": "carneVermelha"},
+    {"id": "aves"},
+    {"id": "leiteIntegral"},
+    {"id": "azeite"},
+    {"id": "alcool"},
 ]
-# Soma máxima possível: 16 pontos (8 itens x 2)
+# Soma máxima possível: 55 pontos (11 itens x 5)
 
 DIET_SCORE_THRESHOLDS = [
-    {"min": 15, "points": 100},
-    {"min": 12, "points": 80},
-    {"min": 8, "points": 50},
-    {"min": 4, "points": 25},
+    {"min": 45, "points": 100},
+    {"min": 35, "points": 80},
+    {"min": 23, "points": 50},
+    {"min": 12, "points": 25},
     {"min": 0, "points": 0},
 ]
 

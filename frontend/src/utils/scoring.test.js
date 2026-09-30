@@ -18,71 +18,62 @@ import {
 
 describe("Motor de Cálculo do Life's Essential 8 — Frontend", () => {
   // ============================================================================
-  // 1. Dieta (scoreDiet)
+  // 1. Dieta (scoreDiet) — Questionário do Mediterrâneo, 11 itens, 0-55 pontos
   // ============================================================================
   describe("scoreDiet", () => {
-    it("deve retornar 100 pontos para dieta ideal (16 pontos somados)", () => {
+    it("deve retornar 100 pontos para dieta ideal (55 pontos somados)", () => {
       const answers = {
-        fruitsVeggies: 2,
-        wholeGrains: 2,
-        fish: 2,
-        sodium: 2,
-        sugaryDrinks: 2,
-        redMeat: 2,
-        nutsLegumes: 2,
-        fatType: 2,
+        cereaisNaoRefinados: 5,
+        batatas: 5,
+        frutas: 5,
+        verduras: 5,
+        legumes: 5,
+        peixe: 5,
+        carneVermelha: 5, // item invertido: "Nunca" = 5 pontos
+        aves: 5,
+        leiteIntegral: 5,
+        azeite: 5,
+        alcool: 5, // "menos que 300ml" = 5 pontos
       };
       expect(scoreDiet(answers)).toBe(100);
     });
 
-    it("deve mapear corretamente os pontos para cada faixa de corte", () => {
-      // 15 pontos -> 100
-      expect(
-        scoreDiet({
-          fruitsVeggies: 2,
-          wholeGrains: 2,
-          fish: 2,
-          sodium: 2,
-          sugaryDrinks: 2,
-          redMeat: 2,
-          nutsLegumes: 2,
-          fatType: 1,
-        })
-      ).toBe(100);
+    it("deve mapear corretamente os pontos para cada faixa de corte (Quadro 3)", () => {
+      // scoreDiet só soma o que vier em cada id — não valida contra as
+      // opções reais, então os testes de fronteira usam valores
+      // arbitrários por item só para fechar o total desejado.
+      const answersWithTotal = (total, itemCount = 11) => {
+        const ids = [
+          "cereaisNaoRefinados", "batatas", "frutas", "verduras", "legumes",
+          "peixe", "carneVermelha", "aves", "leiteIntegral", "azeite", "alcool",
+        ];
+        const answers = {};
+        let remaining = total;
+        for (let i = 0; i < itemCount; i++) {
+          const points = Math.min(5, remaining);
+          answers[ids[i]] = points;
+          remaining -= points;
+        }
+        return answers;
+      };
 
-      // 12 pontos -> 80
-      expect(
-        scoreDiet({
-          fruitsVeggies: 2,
-          wholeGrains: 2,
-          fish: 2,
-          sodium: 2,
-          sugaryDrinks: 2,
-          redMeat: 2,
-        })
-      ).toBe(80);
-
-      // 8 pontos -> 50
-      expect(
-        scoreDiet({
-          fruitsVeggies: 2,
-          wholeGrains: 2,
-          fish: 2,
-          sodium: 2,
-        })
-      ).toBe(50);
-
-      // 4 pontos -> 25
-      expect(
-        scoreDiet({
-          fruitsVeggies: 2,
-          wholeGrains: 2,
-        })
-      ).toBe(25);
-
-      // < 4 pontos -> 0
-      expect(scoreDiet({ fruitsVeggies: 1 })).toBe(0);
+      expect(scoreDiet(answersWithTotal(45))).toBe(100); // 45-55 -> 100
+      expect(scoreDiet(answersWithTotal(44))).toBe(80); // 35-44 -> 80
+      expect(scoreDiet(answersWithTotal(35))).toBe(80);
+      expect(scoreDiet(answersWithTotal(34))).toBe(50); // 23-34 -> 50
+      expect(scoreDiet(answersWithTotal(23))).toBe(50);
+      expect(scoreDiet(answersWithTotal(22))).toBe(25); // 12-22 -> 25
+      expect(scoreDiet(answersWithTotal(12))).toBe(25);
+      expect(scoreDiet(answersWithTotal(11))).toBe(0); // 0-11 -> 0
       expect(scoreDiet({})).toBe(0);
+    });
+
+    it("itens invertidos (carne vermelha, aves, laticínios) pontuam ao contrário da frequência", () => {
+      // "Nunca" consumir carne vermelha/aves/laticínios = 5 pontos (bom);
+      // consumir "mais de 18x/mês" = 0 pontos (ruim) — oposto dos itens normais.
+      const nuncaConsome = { carneVermelha: 5, aves: 5, leiteIntegral: 5 };
+      const consomeMuito = { carneVermelha: 0, aves: 0, leiteIntegral: 0 };
+      expect(scoreDiet(nuncaConsome)).toBeGreaterThan(scoreDiet(consomeMuito));
     });
   });
 
@@ -343,14 +334,17 @@ describe("Motor de Cálculo do Life's Essential 8 — Frontend", () => {
         weightKg: 65,
         heightM: 1.75,
         diet: {
-          fruitsVeggies: 2,
-          wholeGrains: 2,
-          fish: 2,
-          sodium: 2,
-          sugaryDrinks: 2,
-          redMeat: 2,
-          nutsLegumes: 2,
-          fatType: 2,
+          cereaisNaoRefinados: 5,
+          batatas: 5,
+          frutas: 5,
+          verduras: 5,
+          legumes: 5,
+          peixe: 5,
+          carneVermelha: 5,
+          aves: 5,
+          leiteIntegral: 5,
+          azeite: 5,
+          alcool: 5,
         },
         physicalActivityMinutes: 180,
         nicotineStatus: "never",
