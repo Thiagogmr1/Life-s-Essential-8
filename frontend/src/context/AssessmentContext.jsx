@@ -11,7 +11,7 @@ const initialAnswers = {
   moderateActivityMinutes: null, // NOVO: separado de vigorousActivityMinutes
   vigorousActivityMinutes: null,
   nicotineStatus: null,
-  livesWithSmoker: false, // NOVO: exposição passiva ao tabagismo
+  livesWithSmoker: null, // NOVO: exposição passiva ao tabagismo — null força resposta explícita (radio Sim/Não)
   sleepHours: null,
   weightKg: null,
   heightM: null,

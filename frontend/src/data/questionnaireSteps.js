@@ -29,6 +29,21 @@ export const QUESTIONNAIRE_STEPS = [
     unit: "minutos/semana",
     min: 0,
     max: 2000,
+    // Definição e exemplos exatos do Anexo 2 do protocolo (IPAQ —
+    // forma curta, questões 2a/2b): esforço que faz suar leve e
+    // respirar um pouco mais forte que o normal. O IPAQ original
+    // exclui caminhada deste bloco de propósito (ela tem uma seção
+    // própria, 3a/3b, que este app ainda não implementa — ver aviso).
+    helperText: "São atividades que fazem você suar leve e respirar um pouco mais forte que o normal. NÃO inclua caminhada aqui.",
+    examples: [
+      "Pedalar leve na bicicleta",
+      "Nadar",
+      "Dançar",
+      "Ginástica aeróbica leve",
+      "Vôlei recreativo",
+      "Carregar pesos leves",
+      "Serviços domésticos (varrer, aspirar, cuidar do jardim)",
+    ],
   },
   {
     id: "physicalActivityVigorous",
@@ -40,6 +55,17 @@ export const QUESTIONNAIRE_STEPS = [
     unit: "minutos/semana",
     min: 0,
     max: 2000,
+    // Anexo 2 do protocolo (IPAQ — forma curta, questões 1a/1b).
+    helperText: "São atividades que fazem você suar bastante e respirar muito mais forte que o normal.",
+    examples: [
+      "Correr",
+      "Ginástica aeróbica",
+      "Jogar futebol",
+      "Pedalar rápido na bicicleta",
+      "Jogar basquete",
+      "Serviços domésticos pesados (casa, quintal ou jardim)",
+      "Carregar pesos elevados",
+    ],
   },
   {
     id: "nicotine",
@@ -51,16 +77,19 @@ export const QUESTIONNAIRE_STEPS = [
   },
   // NOVO: exposição passiva ao tabagismo — desconta 20 pontos do
   // domínio Tabagismo (ver SECONDHAND_SMOKE_PENALTY em le8Criteria.js).
-  // Pergunta solta, não embutida no passo de nicotina, porque usa um
-  // tipo de input genérico (checkbox) reutilizável por outras perguntas
-  // sim/não que possam surgir no futuro.
+  // Usa "radio" com Sim/Não explícitos (a pedido da orientadora) em vez
+  // de checkbox solto — obriga a pessoa a escolher, não deixa "passar
+  // direto" sem responder.
   {
     id: "secondhandSmoke",
     domain: "nicotineExposure",
-    type: "checkbox",
+    type: "radio",
     field: "livesWithSmoker",
     label: "Você mora com alguém que fuma dentro de casa?",
-    checkboxLabel: "Sim, moro com fumante(s) em casa",
+    options: [
+      { value: true, label: "Sim, moro com fumante(s) em casa" },
+      { value: false, label: "Não, não moro com fumante" },
+    ],
   },
   {
     id: "sleep",

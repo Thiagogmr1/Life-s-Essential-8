@@ -175,6 +175,10 @@ function renderStepInput(step, answers, setField, setDietItem) {
     case "number":
       return (
         <div>
+          {/* NOVO: texto de apoio e exemplos, opcionais — usado hoje
+              pelos passos de atividade moderada/vigorosa, mas qualquer
+              passo "number" pode ganhar isso sem precisar de código novo. */}
+          {step.helperText && <p className="question-card__helper">{step.helperText}</p>}
           <input
             type="number"
             min={step.min}
@@ -185,6 +189,13 @@ function renderStepInput(step, answers, setField, setDietItem) {
             onChange={(e) => handleIntegerChange(e, step.field, setField)}
           />
           <span> {step.unit}</span>
+          {step.examples && (
+            <ul className="question-card__examples">
+              {step.examples.map((example) => (
+                <li key={example}>{example}</li>
+              ))}
+            </ul>
+          )}
         </div>
       );
 
