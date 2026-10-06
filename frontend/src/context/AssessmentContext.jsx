@@ -8,8 +8,10 @@ const AssessmentContext = createContext(null);
 
 const initialAnswers = {
   diet: {},
-  physicalActivityMinutes: null,
+  moderateActivityMinutes: null, // NOVO: separado de vigorousActivityMinutes
+  vigorousActivityMinutes: null,
   nicotineStatus: null,
+  livesWithSmoker: null, // NOVO: exposição passiva ao tabagismo — null força resposta explícita (radio Sim/Não)
   sleepHours: null,
   weightKg: null,
   heightM: null,
@@ -20,6 +22,7 @@ const initialAnswers = {
   glucoseMedication: false,
   systolic: null,
   diastolic: null,
+  bloodPressureMedication: false, // NOVO: tratamento anti-hipertensivo
 };
 
 export function AssessmentProvider({ children }) {

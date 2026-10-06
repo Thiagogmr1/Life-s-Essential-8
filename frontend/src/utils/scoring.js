@@ -6,6 +6,7 @@ import {
   DIET_ITEMS,
   DIET_SCORE_THRESHOLDS,
   NICOTINE_OPTIONS,
+  SECONDHAND_SMOKE_PENALTY,
   SLEEP_THRESHOLDS,
   PHYSICAL_ACTIVITY_THRESHOLDS,
   BMI_THRESHOLDS,
@@ -31,16 +32,26 @@ export function scoreDiet(answers) {
   return tier ? tier.points : 0;
 }
 
-export function scorePhysicalActivity(minutesPerWeek) {
+// CORRIGIDO: agora recebe minutos moderados e vigorosos separados (a
+// pedido da orientadora). Combina em "minutos equivalentes" usando a
+// equivalência padrão OMS/AHA: 1 minuto vigoroso conta como 2 minutos
+// moderados (coerente com "150 min moderados OU 75 min vigorosos" das
+// recomendações — 75x2=150). Depois aplica os mesmos tiers de sempre.
+export function scorePhysicalActivity(moderateMinutes = 0, vigorousMinutes = 0) {
+  const equivalentMinutes = (moderateMinutes ?? 0) + 2 * (vigorousMinutes ?? 0);
   const tier = PHYSICAL_ACTIVITY_THRESHOLDS.find(
-    (t) => minutesPerWeek >= t.min && minutesPerWeek < t.max
+    (t) => equivalentMinutes >= t.min && equivalentMinutes < t.max
   );
   return tier ? tier.points : 0;
 }
 
-export function scoreNicotine(optionValue) {
+// CORRIGIDO: adicionado parâmetro livesWithSmoker — desconto de
+// SECONDHAND_SMOKE_PENALTY (20 pontos) para quem mora com fumante(s)
+// em casa, conforme o texto do protocolo (não estava implementado).
+export function scoreNicotine(optionValue, livesWithSmoker = false) {
   const opt = NICOTINE_OPTIONS.find((o) => o.value === optionValue);
-  return opt ? opt.points : 0;
+  const base = opt ? opt.points : 0;
+  return livesWithSmoker ? clamp(base - SECONDHAND_SMOKE_PENALTY) : base;
 }
 
 export function scoreSleep(hoursPerNight) {
@@ -83,11 +94,17 @@ export function scoreBloodGlucose({ fastingGlucose, hba1c, isOnMedication = fals
   return isOnMedication ? clamp(base - MEDICATION_PENALTY) : base;
 }
 
-export function scoreBloodPressure(systolic, diastolic) {
+// CORRIGIDO: adicionado parâmetro isOnMedication — desconto de
+// MEDICATION_PENALTY (20 pontos) para quem está em tratamento
+// anti-hipertensivo, conforme o protocolo ("Se estiver em tratamento
+// subtrair 20 pontos"). Antes não existia esse desconto aqui, embora
+// já existisse para lipídeos e glicemia.
+export function scoreBloodPressure(systolic, diastolic, isOnMedication = false) {
   const tier = BLOOD_PRESSURE_THRESHOLDS.find(
     (t) => systolic < t.sys && diastolic < t.dia
   );
-  return tier ? tier.points : 0;
+  const base = tier ? tier.points : 0;
+  return isOnMedication ? clamp(base - MEDICATION_PENALTY) : base;
 }
 
 export function calculateCompositeScore(domainScores) {
@@ -108,8 +125,11 @@ export function calculateFullAssessment(rawAnswers) {
 
   const domainScores = {
     diet: scoreDiet(rawAnswers.diet),
-    physicalActivity: scorePhysicalActivity(rawAnswers.physicalActivityMinutes),
-    nicotineExposure: scoreNicotine(rawAnswers.nicotineStatus),
+    physicalActivity: scorePhysicalActivity(
+      rawAnswers.moderateActivityMinutes,
+      rawAnswers.vigorousActivityMinutes
+    ),
+    nicotineExposure: scoreNicotine(rawAnswers.nicotineStatus, rawAnswers.livesWithSmoker),
     sleep: scoreSleep(rawAnswers.sleepHours),
     bmi: scoreBmi(bmi),
     bloodLipids: scoreBloodLipids(rawAnswers.nonHdlCholesterol, rawAnswers.lipidsMedication),
@@ -118,7 +138,11 @@ export function calculateFullAssessment(rawAnswers) {
       hba1c: rawAnswers.hba1c,
       isOnMedication: rawAnswers.glucoseMedication,
     }),
-    bloodPressure: scoreBloodPressure(rawAnswers.systolic, rawAnswers.diastolic),
+    bloodPressure: scoreBloodPressure(
+      rawAnswers.systolic,
+      rawAnswers.diastolic,
+      rawAnswers.bloodPressureMedication
+    ),
   };
 
   const compositeScore = calculateCompositeScore(domainScores);

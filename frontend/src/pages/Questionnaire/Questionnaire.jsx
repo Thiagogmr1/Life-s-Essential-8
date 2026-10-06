@@ -131,6 +131,11 @@ function isStepValid(step, answers) {
       return answers[step.field] !== null && answers[step.field] !== "";
     case "radio":
       return answers[step.field] !== null;
+    // NOVO: tipo genérico de checkbox solto (sim/não). Sempre válido —
+    // o valor default (false) já é uma resposta legítima ("não"),
+    // igual já acontece com lipidsMedication/glucoseMedication.
+    case "checkbox":
+      return true;
     case "bmi":
       return answers.weightKg && answers.heightM;
     case "lipids":
@@ -170,6 +175,10 @@ function renderStepInput(step, answers, setField, setDietItem) {
     case "number":
       return (
         <div>
+          {/* NOVO: texto de apoio e exemplos, opcionais — usado hoje
+              pelos passos de atividade moderada/vigorosa, mas qualquer
+              passo "number" pode ganhar isso sem precisar de código novo. */}
+          {step.helperText && <p className="question-card__helper">{step.helperText}</p>}
           <input
             type="number"
             min={step.min}
@@ -180,6 +189,13 @@ function renderStepInput(step, answers, setField, setDietItem) {
             onChange={(e) => handleIntegerChange(e, step.field, setField)}
           />
           <span> {step.unit}</span>
+          {step.examples && (
+            <ul className="question-card__examples">
+              {step.examples.map((example) => (
+                <li key={example}>{example}</li>
+              ))}
+            </ul>
+          )}
         </div>
       );
 
@@ -197,6 +213,25 @@ function renderStepInput(step, answers, setField, setDietItem) {
               {opt.label}
             </label>
           ))}
+        </div>
+      );
+
+    // NOVO: checkbox solto e genérico, usado hoje só pra exposição
+    // passiva ao tabagismo (secondhandSmoke), mas reutilizável por
+    // qualquer pergunta sim/não futura que não esteja grudada num
+    // campo numérico (diferente do padrão de lipids/glucose/bloodPressure,
+    // que embutem o checkbox de medicação junto do valor medido).
+    case "checkbox":
+      return (
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              checked={answers[step.field] ?? false}
+              onChange={(e) => setField(step.field, e.target.checked)}
+            />
+            {step.checkboxLabel ?? "Sim"}
+          </label>
         </div>
       );
 
@@ -295,6 +330,15 @@ function renderStepInput(step, answers, setField, setDietItem) {
               value={answers.diastolic ?? ""}
               onChange={(e) => handleIntegerChange(e, "diastolic", setField)}
             />
+          </label>
+          {/* NOVO: segue o mesmo padrão já usado em lipids/glucose */}
+          <label>
+            <input
+              type="checkbox"
+              checked={answers.bloodPressureMedication}
+              onChange={(e) => setField("bloodPressureMedication", e.target.checked)}
+            />
+            Faço uso de medicação para pressão alta (anti-hipertensivo)
           </label>
         </div>
       );

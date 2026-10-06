@@ -3,13 +3,20 @@
 Motor de cálculo do Life's Essential 8 — espelha src/utils/scoring.js.
 
 Diferente do front-end, este módulo é a FONTE DA VERDADE dos scores
-salvos no banco. O front pode continuar calculando localmente (para
-feedback instantâneo na UI), mas o que é persistido vem sempre daqui.
+salvos no banco e também dos scores exibidos na tela: o front chama
+calculateFullAssessment() só para validação (dispara
+DadosInsuficientesError se faltar peso/altura), mas descarta o
+resultado — quem popula a UI é sempre a resposta da API. Ou seja,
+qualquer bug de cálculo aqui É o bug que o usuário vê; não há uma
+camada "de verdade" mais autoritativa que esta.
 """
+import math
+
 from app.le8_criteria import (
     DIET_ITEMS,
     DIET_SCORE_THRESHOLDS,
     NICOTINE_OPTIONS,
+    SECONDHAND_SMOKE_PENALTY,
     SLEEP_THRESHOLDS,
     PHYSICAL_ACTIVITY_THRESHOLDS,
     BMI_THRESHOLDS,
@@ -35,21 +42,32 @@ def score_diet(answers: dict) -> int:
     return tier["points"] if tier else 0
 
 
-def score_physical_activity(minutes_per_week: float) -> int:
+def score_physical_activity(moderate_minutes: float = 0, vigorous_minutes: float = 0) -> int:
+    """
+    CORRIGIDO: agora recebe minutos moderados e vigorosos separados.
+    Combina em "minutos equivalentes" usando a equivalência OMS/AHA:
+    1 minuto vigoroso conta como 2 minutos moderados.
+    """
+    equivalent_minutes = (moderate_minutes or 0) + 2 * (vigorous_minutes or 0)
     tier = next(
-        (t for t in PHYSICAL_ACTIVITY_THRESHOLDS if t["min"] <= minutes_per_week < t["max"]),
+        (t for t in PHYSICAL_ACTIVITY_THRESHOLDS if t["min"] <= equivalent_minutes < t["max"]),
         None,
     )
     return tier["points"] if tier else 0
 
 
-def score_nicotine(option_value: str) -> int:
+def score_nicotine(option_value: str, lives_with_smoker: bool = False) -> int:
+    """
+    CORRIGIDO: adicionado parâmetro lives_with_smoker — desconto de
+    SECONDHAND_SMOKE_PENALTY (20 pontos) para quem mora com fumante(s)
+    em casa, conforme o texto do protocolo (não estava implementado).
+    """
     opt = next((o for o in NICOTINE_OPTIONS if o["value"] == option_value), None)
-    return opt["points"] if opt else 0
+    base = opt["points"] if opt else 0
+    return clamp(base - SECONDHAND_SMOKE_PENALTY) if lives_with_smoker else base
 
 
 def score_sleep(hours_per_night: float) -> int:
-    # A ordem de SLEEP_THRESHOLDS é significativa — não reordenar.
     tier = next(
         (t for t in SLEEP_THRESHOLDS if t["min"] <= hours_per_night < t["max"]),
         None,
@@ -94,17 +112,32 @@ def score_blood_glucose(
     return clamp(base - MEDICATION_PENALTY) if is_on_medication else base
 
 
-def score_blood_pressure(systolic: float, diastolic: float) -> int:
+def score_blood_pressure(systolic: float, diastolic: float, is_on_medication: bool = False) -> int:
+    """
+    CORRIGIDO: adicionado parâmetro is_on_medication — desconto de
+    MEDICATION_PENALTY (20 pontos) para quem está em tratamento
+    anti-hipertensivo, conforme o protocolo ("Se estiver em tratamento
+    subtrair 20 pontos"). Antes não existia esse desconto aqui, embora
+    já existisse para lipídeos e glicemia.
+    """
     tier = next(
         (t for t in BLOOD_PRESSURE_THRESHOLDS if systolic < t["sys"] and diastolic < t["dia"]),
         None,
     )
-    return tier["points"] if tier else 0
+    base = tier["points"] if tier else 0
+    return clamp(base - MEDICATION_PENALTY) if is_on_medication else base
 
 
 def calculate_composite_score(domain_scores: dict) -> int:
+    """
+    CORRIGIDO: round() nativo do Python usa "arredondamento bancário"
+    (arredonda .5 para o par mais próximo — 92.5 vira 92, não 93).
+    Isso divergia do Math.round() do JS (que sempre arredonda .5 para
+    cima) e do texto da metodologia ("arredonda para o número inteiro
+    mais próximo"). math.floor(x + 0.5) replica o comportamento do JS.
+    """
     values = list(domain_scores.values())
-    return round(sum(values) / len(values))
+    return math.floor(sum(values) / len(values) + 0.5)
 
 
 def classify_score(composite_score: int) -> str:
@@ -123,8 +156,14 @@ def calculate_full_assessment(raw_answers: dict) -> dict:
 
     domain_scores = {
         "diet": score_diet(raw_answers.get("diet", {})),
-        "physicalActivity": score_physical_activity(raw_answers.get("physicalActivityMinutes", 0)),
-        "nicotineExposure": score_nicotine(raw_answers.get("nicotineStatus")),
+        "physicalActivity": score_physical_activity(
+            raw_answers.get("moderateActivityMinutes", 0),
+            raw_answers.get("vigorousActivityMinutes", 0),
+        ),
+        "nicotineExposure": score_nicotine(
+            raw_answers.get("nicotineStatus"),
+            raw_answers.get("livesWithSmoker", False),
+        ),
         "sleep": score_sleep(raw_answers.get("sleepHours", 0)),
         "bmi": score_bmi(bmi),
         "bloodLipids": score_blood_lipids(
@@ -139,6 +178,7 @@ def calculate_full_assessment(raw_answers: dict) -> dict:
         "bloodPressure": score_blood_pressure(
             raw_answers.get("systolic"),
             raw_answers.get("diastolic"),
+            raw_answers.get("bloodPressureMedication", False),
         ),
     }
 
