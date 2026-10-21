@@ -12,6 +12,8 @@
   <img src="https://img.shields.io/badge/PyJWT-2.13-000000" alt="PyJWT" />
   <img src="https://img.shields.io/badge/bcrypt-5.0-8B4513" alt="bcrypt" />
   <img src="https://img.shields.io/badge/Uvicorn-0.52-2C3E50" alt="Uvicorn" />
+  <img src="https://img.shields.io/badge/SlowAPI-0.1.10-FF6F61" alt="SlowAPI" />
+  <img src="https://img.shields.io/badge/pytest-9.1-0A9EDC" alt="pytest" />
 </p>
 
 > [!NOTE]
@@ -32,6 +34,8 @@
 | Autenticação | PyJWT (HS256) | 2.13.0 |
 | Variáveis de ambiente | python-dotenv | 1.2.2 |
 | Validação de email | email-validator | 2.3.0 |
+| Rate Limiting | SlowAPI | 0.1.10 |
+| Testes | pytest | 9.1.1 |
 
 ---
 
@@ -110,17 +114,23 @@ backend/
 │   ├── database.py        # Engine SQLModel, conexão com PostgreSQL
 │   ├── models.py          # Tabelas do banco (SQLModel): usuarios, avaliacoes
 │   ├── schemas.py         # Schemas Pydantic de entrada/saída da API
-│   ├── auth.py            # Hash bcrypt + geração/validação JWT + config de cookie
+│   ├── auth.py            # Hash bcrypt + geração/validação JWT (sessão + reset) + config de cookie
 │   ├── dependencies.py    # Dependências FastAPI: get_usuario_atual, get_usuario_admin
 │   ├── scoring.py         # Motor de cálculo LE8 (fonte da verdade)
 │   ├── le8_criteria.py    # Faixas de pontuação (espelho do front)
+│   ├── limiter.py         # Configuração do SlowAPI (rate limiting por IP)
 │   └── routers/
-│       ├── usuarios.py    # Autenticação: cadastro, login, logout, me
+│       ├── usuarios.py    # Autenticação: cadastro, login, logout, me, forgot/reset password
 │       ├── avaliacoes.py  # CRUD de avaliações
 │       └── estatisticas.py # Painel admin: listagem de usuários + resumo
 │
+├── tests/
+│   ├── __init__.py
+│   └── test_scoring.py    # Testes unitários (pytest) das funções de pontuação
+│
 ├── requirements.txt
 ├── .env                   # Não versionado
+├── .env.example           # Template de variáveis de ambiente
 └── .gitignore
 ```
 
@@ -199,6 +209,8 @@ erDiagram
 | POST | `/usuarios/login` | Não | Autentica com email/senha e seta cookie |
 | POST | `/usuarios/logout` | Não | Remove o cookie de autenticação |
 | GET | `/usuarios/me` | Sim | Retorna dados do usuário autenticado |
+| POST | `/usuarios/forgot-password` | Não | Gera token JWT de reset (30 min) e imprime link no console (email mockado) |
+| POST | `/usuarios/reset-password/{token}` | Não | Redefine a senha usando token JWT de reset |
 
 **Corpo de `POST /usuarios/cadastro`:**
 ```json
@@ -250,9 +262,11 @@ Todas as rotas exigem autenticação (cookie JWT).
 ```json
 {
   "respostas_brutas": {
-    "diet": { "fruitsVeggies": 2, "wholeGrains": 1, ... },
-    "physicalActivityMinutes": 150,
+    "diet": { "cereaisNaoRefinados": 3, "batatas": 2, "frutas": 4, "verduras": 5, "legumes": 3, "peixe": 2, "carneVermelha": 4, "aves": 3, "leiteIntegral": 3, "azeite": 4, "alcool": 5 },
+    "moderateActivityMinutes": 90,
+    "vigorousActivityMinutes": 30,
     "nicotineStatus": "never",
+    "livesWithSmoker": false,
     "sleepHours": 7.5,
     "weightKg": 70,
     "heightM": 1.75,
@@ -262,7 +276,8 @@ Todas as rotas exigem autenticação (cookie JWT).
     "hba1c": null,
     "glucoseMedication": false,
     "systolic": 115,
-    "diastolic": 75
+    "diastolic": 75,
+    "bloodPressureMedication": false
   }
 }
 ```
@@ -354,18 +369,18 @@ O cálculo dos scores no backend (`scoring.py` + `le8_criteria.py`) **espelha** 
 
 ### Domínios calculados
 
-| Domínio | Função | Input |
-|---|---|---|
-| Dieta | `score_diet()` | Soma dos 8 itens (0–16 pts) → faixa |
-| Atividade Física | `score_physical_activity()` | Minutos/semana → faixa |
-| Tabagismo | `score_nicotine()` | Opção selecionada → pontos diretos |
-| Sono | `score_sleep()` | Horas/noite → faixa (ordem significativa!) |
-| IMC | `score_bmi()` | Peso/Altura² → faixa |
-| Colesterol | `score_blood_lipids()` | mg/dL → faixa (−20 se medicação) |
-| Glicemia | `score_blood_glucose()` | Glicemia jejum ou HbA1c → faixa (−20 se medicação) |
-| Pressão | `score_blood_pressure()` | Sistólica + diastólica → faixa |
+| Domínio | Função | Input | Penalidade |
+|---|---|---|---|
+| Dieta | `score_diet()` | Soma dos 11 itens do questionário mediterrâneo (0–55 pts) → faixa | — |
+| Atividade Física | `score_physical_activity()` | Minutos equivalentes (moderada + 2 × vigorosa) → faixa | — |
+| Tabagismo | `score_nicotine()` | Opção selecionada → pontos diretos | −20 se mora com fumante (`SECONDHAND_SMOKE_PENALTY`) |
+| Sono | `score_sleep()` | Horas/noite → faixa | — |
+| IMC | `score_bmi()` | Peso/Altura² → faixa | — |
+| Colesterol | `score_blood_lipids()` | mg/dL → faixa | −20 se em tratamento (`MEDICATION_PENALTY`) |
+| Glicemia | `score_blood_glucose()` | Glicemia de jejum (ou HbA1c, por compatibilidade) → faixa | −20 se em tratamento (`MEDICATION_PENALTY`) |
+| Pressão | `score_blood_pressure()` | Sistólica + diastólica → faixa | −20 se em tratamento anti-hipertensivo (`MEDICATION_PENALTY`) |
 
-- **Score composto**: média aritmética dos 8 domínios, arredondada.
+- **Score composto**: média aritmética dos 8 domínios, arredondada com `math.floor(x + 0.5)` (replica `Math.round()` do JS, evitando o arredondamento bancário do `round()` nativo do Python).
 - **Classificação**: `baixa` (≤ 49), `moderada` (50–79), `alta` (80–100).
 
 > [!CAUTION]
@@ -394,7 +409,7 @@ pytest -v
 | Token | JWT HS256, expira em 7 dias, entregue via cookie httpOnly |
 | Isolamento de dados | `GET /avaliacoes` filtra por `usuario_id` do token — um usuário nunca acessa avaliações de outro |
 | Anti-enumeração | Mensagem de erro idêntica + hash dummy para timing constante |
-| Rate Limiting | Limite de 5 req/min por IP em `/usuarios/login` e `/usuarios/cadastro` via SlowAPI (HTTP 429) |
+| Rate Limiting | SlowAPI (HTTP 429): 5 req/min por IP em `/usuarios/login`, `/usuarios/cadastro` e `/usuarios/reset-password`; 3 req/min em `/usuarios/forgot-password` |
 | CORS | Dev: `localhost:5173`. Produção: origens configuráveis via `FRONTEND_URL` |
 | Admin | Rotas protegidas por `get_usuario_admin` (verifica `role == admin`) |
 
@@ -403,14 +418,18 @@ pytest -v
 ## Limitações Conhecidas / Próximos Passos
 
 - [ ] Deploy público do backend (atualmente roda apenas local)
-- [ ] Endpoint de recuperação de senha
-- [x] Rate limiting nas rotas de login/cadastro
+- [x] Endpoint de recuperação de senha (parcial — token JWT de reset implementado, email mockado via `print()`)
+- [ ] Integração com serviço de email real para recuperação de senha
+- [x] Rate limiting nas rotas de login, cadastro e recuperação de senha
+- [x] Testes unitários de pontuação (pytest)
 - [ ] Migrations automatizadas (atualmente as tabelas são criadas via SQLModel `create_all` ou SQL manual)
+- [ ] Persistir o valor numérico do IMC (kg/m²), não apenas o `score_imc`
 - [ ] Fonte única de verdade para critérios LE8 (hoje é duplicado entre front e back)
 - [ ] Termo de consentimento / conformidade LGPD para dados sensíveis de saúde
 
 ---
 
-## Referência Científica
+## Referências Científicas
 
-Lloyd-Jones, D.M. et al. *Life's Essential 8: Updating and Enhancing the American Heart Association's Construct of Cardiovascular Health*. Circulation, 2022;146:e18–e43.
+- Lloyd-Jones, D.M. et al. *Life's Essential 8: Updating and Enhancing the American Heart Association's Construct of Cardiovascular Health*. Circulation, 2022;146:e18–e43.
+- Panagiotakos, D.B. et al. *Adherence to the Mediterranean food pattern predicts the prevalence of hypertension, hypercholesterolemia, diabetes and obesity, among healthy adults; the accuracy of the MedDietScore*. Preventive Medicine, 2007;44(4):335–340.

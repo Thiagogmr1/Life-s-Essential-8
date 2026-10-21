@@ -35,6 +35,7 @@
 | Exportação Excel | SheetJS (xlsx 0.18) |
 | Ícones | Lucide React 1.46 |
 | Acessibilidade (Libras) | VLibras (widget do Governo Federal / LAViD-UFPB) |
+| Testes unitários | Vitest 5.0 |
 | Tipografia | Montserrat (títulos) · Inter (corpo) · IBM Plex Mono (dados numéricos) |
 
 ---
@@ -76,6 +77,8 @@ VITE_API_URL=http://localhost:8000
 | `build` | `npm run build` | Build de produção |
 | `preview` | `npm run preview` | Preview local do build de produção |
 | `lint` | `npm run lint` | Verificação de código (ESLint) |
+| `test` | `npm test` | Testes unitários (Vitest) — executa uma vez |
+| `test:watch` | `npm run test:watch` | Testes em modo watch (re-executa ao salvar) |
 
 ---
 
@@ -110,12 +113,15 @@ frontend/
 │   ├── pages/
 │   │   ├── Login/            # Tela de login
 │   │   ├── Cadastro/         # Tela de cadastro de conta
+│   │   ├── ForgotPassword/   # Tela "Esqueci minha senha"
+│   │   ├── ResetPassword/    # Tela de redefinição de senha (via token)
 │   │   ├── Home/             # Landing page — explica o LE8, botão de iniciar
-│   │   ├── Questionnaire/    # Wizard das 15 perguntas (8 domínios)
+│   │   ├── Questionnaire/    # Wizard das 20 perguntas (8 domínios)
 │   │   ├── Results/          # Score final, breakdown por domínio, exportar PDF
 │   │   ├── History/          # Histórico de avaliações do usuário
 │   │   ├── HistoryDetail/    # Detalhe de uma avaliação específica
-│   │   └── AdminEstatisticas/ # Painel administrativo com estatísticas
+│   │   ├── AdminEstatisticas/ # Painel administrativo com estatísticas
+│   │   └── auth-shared.css   # CSS compartilhado (Login, Cadastro, ForgotPassword, ResetPassword)
 │   │
 │   ├── context/
 │   │   ├── AuthContext.jsx       # Estado de autenticação (login/logout/cadastro)
@@ -123,7 +129,7 @@ frontend/
 │   │
 │   ├── data/
 │   │   ├── le8Criteria.js        # Critérios e faixas de pontuação da AHA
-│   │   └── questionnaireSteps.js # Definição e ordem das 15 etapas do wizard
+│   │   └── questionnaireSteps.js # Definição e ordem das 20 etapas do wizard
 │   │
 │   ├── utils/
 │   │   ├── api.js                # Client HTTP centralizado (fetch + cookies)
@@ -132,7 +138,8 @@ frontend/
 │   │   ├── exportPdf.js          # PDF do resultado individual e do histórico
 │   │   ├── exportExcel.js        # Planilha Excel do histórico do usuário
 │   │   ├── exportAdminPdf.js     # PDF do relatório administrativo
-│   │   └── exportAdminExcel.js   # Excel da listagem de usuários (admin)
+│   │   ├── exportAdminExcel.js   # Excel da listagem de usuários (admin)
+│   │   └── scoring.test.js      # Testes unitários (Vitest) das funções de pontuação
 │   │
 │   ├── hooks/
 │   │   └── useVLibrasRefresh.js  # Hook para re-scan do VLibras (comentado)
@@ -159,8 +166,10 @@ frontend/
 | `/` | Login | PublicRoute | Tela de login (redireciona para /home se logado) |
 | `/login` | Login | PublicRoute | Alias de login |
 | `/cadastro` | Cadastro | PublicRoute | Cadastro de conta |
+| `/esqueci-senha` | ForgotPassword | PublicRoute | Solicita link de recuperação de senha |
+| `/redefinir-senha/:token` | ResetPassword | PublicRoute | Redefine a senha via token JWT temporário |
 | `/home` | Home | PrivateRoute | Landing — explica o LE8, inicia avaliação |
-| `/questionario` | Questionnaire | PrivateRoute | Wizard com as 15 perguntas |
+| `/questionario` | Questionnaire | PrivateRoute | Wizard com as 20 perguntas |
 | `/resultado/:id?` | Results | PrivateRoute | Score final e breakdown por domínio |
 | `/historico` | History | PrivateRoute | Lista de avaliações do usuário |
 | `/historico/:id` | HistoryDetail | PrivateRoute | Detalhe de uma avaliação específica |
@@ -197,20 +206,22 @@ Todas as cores estão centralizadas em `src/styles/variables.css` como CSS custo
 
 ---
 
-## Questionário — Wizard de 15 Etapas
+## Questionário — Wizard de 20 Etapas
 
-O questionário é um **wizard** (uma pergunta por vez) definido em `src/data/questionnaireSteps.js`. Os 15 passos cobrem os **8 domínios** do LE8:
+O questionário é um **wizard** (uma pergunta por vez) definido em `src/data/questionnaireSteps.js`. Os 20 passos cobrem os **8 domínios** do LE8:
 
-| # | Domínio | Tipo | Campo |
-|---|---|---|---|
-| 1–8 | Dieta | Seleção (3 opções, 0/1/2 pts cada) | 8 itens alimentares |
-| 9 | Atividade Física | Número | `physicalActivityMinutes` (min/semana) |
-| 10 | Tabagismo | Rádio (5 opções) | `nicotineStatus` |
-| 11 | Sono | Número | `sleepHours` (horas/noite) |
-| 12 | IMC | Peso + Altura | `weightKg` + `heightM` |
-| 13 | Colesterol não-HDL | Número + Checkbox medicação | `nonHdlCholesterol` + `lipidsMedication` |
-| 14 | Glicemia | Glicemia jejum e/ou HbA1c + Checkbox | `fastingGlucose` / `hba1c` + `glucoseMedication` |
-| 15 | Pressão Arterial | Sistólica + Diastólica | `systolic` + `diastolic` |
+| # | Domínio | Tipo | Campo | Instrumento / Referência |
+|---|---|---|---|---|
+| 1–11 | Dieta | Seleção (6 opções, 0–5 pts cada) | 11 itens do questionário mediterrâneo | Panagiotakos et al., 2006 (Anexo 1) |
+| 12 | Atividade Física (moderada) | Número | `moderateActivityMinutes` (min/semana) | IPAQ — forma curta |
+| 13 | Atividade Física (vigorosa) | Número | `vigorousActivityMinutes` (min/semana) | IPAQ — forma curta |
+| 14 | Tabagismo | Rádio (5 opções) | `nicotineStatus` | — |
+| 15 | Exposição passiva ao tabagismo | Rádio (Sim/Não) | `livesWithSmoker` | Protocolo do grupo |
+| 16 | Sono | Número | `sleepHours` (horas/noite) | — |
+| 17 | IMC | Peso + Altura | `weightKg` + `heightM` | — |
+| 18 | Colesterol não-HDL | Número + Checkbox medicação | `nonHdlCholesterol` + `lipidsMedication` | — |
+| 19 | Glicemia | Glicemia de jejum e/ou HbA1c + Checkbox | `fastingGlucose` / `hba1c` + `glucoseMedication` | Quadro 5 do protocolo |
+| 20 | Pressão Arterial | Sistólica + Diastólica + Checkbox medicação | `systolic` + `diastolic` + `bloodPressureMedication` | — |
 
 ### Fluxo de Dados
 
@@ -220,7 +231,7 @@ questionnaireSteps.js (definição) → Questionnaire.jsx (UI)
 AssessmentContext.answers (estado global)
         ↓ submitAssessment()
     ┌───────────────────────┐
-    │ scoring.js (validação │ ← cálculo LOCAL (preview, verifica campos obrigatórios)
+    │ scoring.js (validação │ ← cálculo LOCAL (só validação — resultado é descartado)
     │ client-side)          │
     └──────────┬────────────┘
                ↓
@@ -236,7 +247,7 @@ AssessmentContext.answers (estado global)
 ```
 
 > [!NOTE]
-> O scoring é executado **duas vezes**: o frontend calcula localmente para validar campos obrigatórios antes do envio, mas o resultado que é exibido e persistido vem **sempre do backend** (fonte da verdade).
+> O frontend chama `calculateFullAssessment()` no momento do envio **apenas para validação** — por exemplo, lança `DadosInsuficientesError` se peso ou altura estiverem vazios. O retorno dessa chamada é **descartado**; o resultado exibido na tela e persistido no banco vem **sempre do backend** (`scoring.py`), que é a fonte da verdade.
 
 ---
 
@@ -244,11 +255,14 @@ AssessmentContext.answers (estado global)
 
 Definida em `src/utils/scoring.js` + `src/data/le8Criteria.js`:
 
-- **Cada domínio** recebe um score de **0 a 100** pontos, baseado em faixas (thresholds) definidas pela diretriz oficial da AHA.
-- O **score composto** é a **média aritmética** dos 8 scores de domínio.
+- **Cada domínio** recebe um score de **0 a 100** pontos, baseado em faixas (thresholds) definidas pela diretriz oficial da AHA, adaptadas pelo protocolo do grupo de pesquisa (CNPq 2025).
+- **Dieta**: soma dos 11 itens do questionário mediterrâneo (0–55 pts) → faixas (≥ 45 → 100, ≥ 35 → 80, ≥ 23 → 50, ≥ 12 → 25, < 12 → 0).
+- **Atividade Física**: minutos equivalentes = moderada + 2 × vigorosa (equivalência OMS/AHA).
+- **Tabagismo**: pontuação direta por opção − 20 pontos de penalidade se `livesWithSmoker` (`SECONDHAND_SMOKE_PENALTY`), mínimo 0.
+- **Penalidades de medicação** (−20 pts, `MEDICATION_PENALTY`, mínimo 0): aplicadas em **colesterol**, **glicemia** e **pressão arterial**.
+- O **score composto** é a **média aritmética** dos 8 scores de domínio, arredondada com `Math.round()`.
 - **Classificação final**: Baixa (0–49), Moderada (50–79), Alta (80–100).
-- Domínios de colesterol e glicemia sofrem um **desconto de 20 pontos** se o usuário está em tratamento medicamentoso.
-- O cálculo de **IMC** lança erro (`DadosInsuficientesError`) se peso ou altura não forem preenchidos.
+- O cálculo de **IMC** lança erro (`DadosInsuficientesError`) se peso ou altura não forem preenchidos. O valor numérico do IMC (kg/m²) **não é persistido** no banco — apenas o `score_imc` (0–100).
 
 ---
 
@@ -265,10 +279,11 @@ Gerencia o ciclo de autenticação:
 ### `AssessmentContext`
 
 Gerencia o estado do questionário e resultados:
-- `answers` — respostas acumuladas durante o wizard
+- `answers` — respostas acumuladas durante o wizard (inclui `diet`, `moderateActivityMinutes`, `vigorousActivityMinutes`, `livesWithSmoker`, `bloodPressureMedication`, entre outros)
 - `setField(field, value)` / `setDietItem(itemId, points)` — atualizam respostas
-- `submitAssessment()` — valida localmente + envia para API + armazena resultado
-- `result` — resultado da última avaliação
+- `resetAnswers()` — restaura todas as respostas para o estado inicial
+- `submitAssessment()` — chama `calculateFullAssessment()` para validação (descarta o resultado), envia `respostas_brutas` para a API e armazena o resultado recalculado pelo backend
+- `result` — resultado da última avaliação (sempre vindo do backend)
 - `history` / `carregarHistorico()` — histórico carregado do backend
 - `enviando` / `erro` — estados de loading e erro
 
@@ -336,6 +351,20 @@ O frontend é publicado na **Vercel**, com `Root Directory` configurado como `fr
 
 ---
 
-## Referência Científica
+## Limitações Conhecidas / Próximos Passos
 
-Lloyd-Jones, D.M. et al. *Life's Essential 8: Updating and Enhancing the American Heart Association's Construct of Cardiovascular Health*. Circulation, 2022;146:e18–e43.
+- [x] Testes unitários de pontuação (Vitest)
+- [x] Exportação PDF e Excel (usuário + admin)
+- [x] Telas de recuperação de senha (ForgotPassword + ResetPassword) — email ainda mockado no backend
+- [ ] Deploy público do frontend
+- [ ] Envio real de email para recuperação de senha
+- [ ] Persistir valor numérico do IMC (kg/m²), não só o score
+- [ ] Fonte única de verdade para critérios LE8 (hoje duplicado entre front e back)
+- [ ] Termo de consentimento / conformidade LGPD para dados sensíveis de saúde
+
+---
+
+## Referências Científicas
+
+- Lloyd-Jones, D.M. et al. *Life's Essential 8: Updating and Enhancing the American Heart Association's Construct of Cardiovascular Health*. Circulation, 2022;146:e18–e43.
+- Panagiotakos, D.B. et al. *Adherence to the Mediterranean food pattern predicts the prevalence of hypertension, hypercholesterolemia, diabetes and obesity, among healthy adults; the accuracy of the MedDietScore*. Preventive Medicine, 2007;44(4):335–340.
