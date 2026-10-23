@@ -55,3 +55,14 @@ class Avaliacao(SQLModel, table=True):
     score_glicemia: int
     score_pressao: int
     respostas_brutas: dict = Field(sa_column=Column(JSONB))
+
+class Consentimento(SQLModel, table=True):
+    __tablename__ = "consentimentos"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    usuario_id: uuid.UUID = Field(
+        foreign_key="usuarios.id", ondelete="CASCADE", index=True
+    )
+    versao_termo: str = Field(max_length=20)
+    aceito_em: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    revogado_em: datetime | None = None

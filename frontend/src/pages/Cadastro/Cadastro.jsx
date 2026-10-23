@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { ApiError } from "../../utils/api";
+import TermoConsentimento from "../../components/TermoConsentimento/TermoConsentimento";
 import "./Cadastro.css";
 
 const REDIRECT_DELAY_MS = 2000;
@@ -31,6 +32,9 @@ export default function Cadastro() {
 
   const { cadastrar, setEmTransicaoCadastro } = useAuth();
   const navigate = useNavigate();
+
+  const [aceiteTermo, setAceiteTermo] = useState(false);
+  const [termoAberto, setTermoAberto] = useState(false);
 
   // Carrega a lista de estados uma vez, ao montar o componente
   useEffect(() => {
@@ -87,6 +91,11 @@ async function handleSubmit(e) {
       return;
     }
 
+    if (!aceiteTermo) {
+      setErro("É necessário aceitar o termo de consentimento");
+      return;
+    }
+
     setEnviando(true);
 
     try {
@@ -100,6 +109,7 @@ async function handleSubmit(e) {
         cidade,
         email,
         senha,
+        aceite_termo: aceiteTermo,
       });
 
       setSucesso(true);
@@ -331,6 +341,28 @@ async function handleSubmit(e) {
                 </div>
               </div>
 
+              <div className="cadastro-consent">
+                <input
+                  id="aceiteTermo"
+                  type="checkbox"
+                  checked={aceiteTermo}
+                  onChange={(e) => setAceiteTermo(e.target.checked)}
+                  required
+                />
+                <label htmlFor="aceiteTermo">
+                  Li e concordo com o tratamento dos meus dados pessoais,
+                  inclusive dados de saúde, conforme o{" "}
+                  <button
+                    type="button"
+                    className="cadastro-consent__link"
+                    onClick={() => setTermoAberto(true)}
+                  >
+                    Termo de Consentimento
+                  </button>
+                  .
+                </label>
+              </div>
+
               <button
                 className="cadastro-submit"
                 type="submit"
@@ -343,6 +375,15 @@ async function handleSubmit(e) {
                 Já tem uma conta? <Link to="/login">Entrar</Link>
               </p>
             </form>
+
+             <TermoConsentimento
+              aberto={termoAberto}
+              onFechar={() => setTermoAberto(false)}
+              onAceitar={() => {
+                setAceiteTermo(true);
+                setTermoAberto(false);
+              }}
+            />
           </>
         )}
       </div>
