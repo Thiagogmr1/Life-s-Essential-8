@@ -69,7 +69,8 @@ def cadastrar(
         senha_hash=hash_senha(dados.senha),
     )
     session.add(usuario)
-    db.add(Consentimento(usuario_id=usuario.id, versao_termo=VERSAO_TERMO_ATUAL))
+    session.flush()
+    session.add(Consentimento(usuario_id=usuario.id, versao_termo=VERSAO_TERMO_ATUAL))
     session.commit()
     session.refresh(usuario)
 

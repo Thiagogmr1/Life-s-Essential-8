@@ -409,6 +409,69 @@
   }
 }
 
+/* ─────────────────────────────
+   CONSENTIMENTO LGPD
+   ───────────────────────────── */
+
+.cadastro-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 0.9rem;
+
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.cadastro-consent input[type="checkbox"] {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 0.1rem;
+
+  accent-color: var(--uni-navy);
+  cursor: pointer;
+}
+
+.cadastro-consent input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--uni-sky);
+  outline-offset: 2px;
+}
+
+.cadastro-consent label {
+  cursor: pointer;
+}
+
+.cadastro-consent__link {
+  padding: 0;
+
+  background: none;
+  border: none;
+
+  color: var(--brand);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+
+  cursor: pointer;
+}
+
+.cadastro-consent__link:hover {
+  color: var(--uni-navy);
+}
+
+.cadastro-consent__link:focus-visible {
+  outline: 2px solid var(--uni-sky);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
 
 /* ─────────────────────────────
    RESPONSIVO — MOBILE
