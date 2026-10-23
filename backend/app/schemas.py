@@ -13,6 +13,7 @@ class UsuarioCadastro(BaseModel):
     cidade: str
     email: EmailStr
     senha: str = Field(min_length=8, max_length=72)
+    aceite_termo: bool
 
     @field_validator("data_nascimento")
     @classmethod
@@ -28,6 +29,15 @@ class UsuarioCadastro(BaseModel):
     @classmethod
     def validar_estado(cls, v: str) -> str:
         return v.upper()
+
+    @field_validator("aceite_termo")
+    @classmethod
+    def validar_aceite_termo(cls, v: bool) -> bool:
+        if not v:
+            raise ValueError(
+                "É necessário aceitar o termo de consentimento para se cadastrar."
+            )
+        return v
 
 
 class UsuarioLogin(BaseModel):

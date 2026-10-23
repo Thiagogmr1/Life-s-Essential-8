@@ -3,6 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlmodel import Session, select
 from app.database import get_session
 from app.models import Usuario
+from app.models import Consentimento
+from app.config import VERSAO_TERMO_ATUAL
 from app.schemas import (
     UsuarioCadastro,
     UsuarioLogin,
@@ -67,6 +69,7 @@ def cadastrar(
         senha_hash=hash_senha(dados.senha),
     )
     session.add(usuario)
+    db.add(Consentimento(usuario_id=usuario.id, versao_termo=VERSAO_TERMO_ATUAL))
     session.commit()
     session.refresh(usuario)
 
