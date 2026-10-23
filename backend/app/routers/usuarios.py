@@ -1,10 +1,12 @@
 # backend/app/routers/usuarios.py
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, BackgroundTasks
 from sqlmodel import Session, select
 from app.database import get_session
 from app.models import Usuario
 from app.models import Consentimento
 from app.config import VERSAO_TERMO_ATUAL
+from app.services.email import enviar_email_redefinicao
+import os
 from app.schemas import (
     UsuarioCadastro,
     UsuarioLogin,
@@ -119,6 +121,7 @@ def obter_usuario_atual(usuario_atual: Usuario = Depends(get_usuario_atual)):
 def esqueci_senha(
     request: Request,
     dados: EsqueciSenhaRequisicao,
+    background_tasks: BackgroundTasks,
     session: Session = Depends(get_session),
 ):
     usuario = session.exec(
@@ -127,8 +130,9 @@ def esqueci_senha(
 
     if usuario:
         token = criar_token_reset_senha(str(usuario.id))
-        link = f"http://localhost:5173/redefinir-senha/{token}"
-        print(f"\n{'='*50}\n🔗 [Mock Email] Acesse para resetar a senha de {usuario.email}:\n{link}\n{'='*50}\n")
+        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+        link = f"{frontend_url}/redefinir-senha/{token}"
+        background_tasks.add_task(enviar_email_redefinicao, usuario.email, link)
 
     return {"detail": "Se o e-mail estiver cadastrado, você receberá um link de recuperação."}
 

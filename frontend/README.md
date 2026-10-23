@@ -360,7 +360,7 @@ O frontend é publicado na **Vercel**, com `Root Directory` configurado como `fr
 - [ ] Envio real de email para recuperação de senha
 - [ ] Persistir valor numérico do IMC (kg/m²), não só o score
 - [ ] Fonte única de verdade para critérios LE8 (hoje duplicado entre front e back)
-- [ ] Termo de consentimento / conformidade LGPD para dados sensíveis de saúde
+- [x] Termo de consentimento / conformidade LGPD para dados sensíveis de saúde
 
 ---
 

@@ -425,7 +425,7 @@ pytest -v
 - [ ] Migrations automatizadas (atualmente as tabelas são criadas via SQLModel `create_all` ou SQL manual)
 - [ ] Persistir o valor numérico do IMC (kg/m²), não apenas o `score_imc`
 - [ ] Fonte única de verdade para critérios LE8 (hoje é duplicado entre front e back)
-- [ ] Termo de consentimento / conformidade LGPD para dados sensíveis de saúde
+- [x] Termo de consentimento / conformidade LGPD para dados sensíveis de saúde
 
 ---
 
