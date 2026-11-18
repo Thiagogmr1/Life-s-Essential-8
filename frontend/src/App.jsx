@@ -15,9 +15,12 @@ import History from "./pages/History/History";
 import HistoryDetail from "./pages/HistoryDetail/HistoryDetail";
 import AdminEstatisticas from "./pages/AdminEstatisticas/AdminEstatisticas";
 import AdminRoute from "./components/AdminRoute/AdminRoute";
+import useVLibrasRefresh from "./hooks/useVLibrasRefresh";
 import "./App.css";
 
 function App() {
+  useVLibrasRefresh();
+
   return (
     <AuthProvider>
       <Header />

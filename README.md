@@ -207,10 +207,10 @@ docs: documentação
 - [x] Histórico de avaliações persistido no banco
 - [x] Exportação de relatórios (PDF e Excel)
 - [x] Painel administrativo com estatísticas e listagem de usuários
-- [ ] Acessibilidade — widget VLibras (planejado para versão futura)
+- [x] Acessibilidade — widget VLibras (Governo Federal)
 - [ ] Deploy público (em desenvolvimento)
-- [ ] Termo de consentimento / conformidade LGPD
-- [ ] Recuperação de senha
+- [x] Termo de consentimento / conformidade LGPD
+- [x] Recuperação de senha "Necessário o SMTP da Universidade"
 - [x] Rate limiting nas rotas de autenticação (SlowAPI)
 - [x] Testes automatizados de pontuação (pytest no backend e vitest no frontend)
 

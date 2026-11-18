@@ -4,7 +4,7 @@ export const TERMO_CONSENTIMENTO = [
   {
     titulo: "1. Sobre o NATSA",
     texto:
-      "O NATSA é uma ferramenta de avaliação da saúde cardiovascular baseada no Life's Essential 8 (American Heart Association), desenvolvida no âmbito de projeto de Iniciação Científica da Universidade Evangélica de Goiás - UniEVANGÉLICA, sob orientação de [ORIENTADORA].",
+      "O NATSA é uma ferramenta de avaliação da saúde cardiovascular baseada no Life's Essential 8 (American Heart Association), desenvolvida no âmbito de projeto de Iniciação Científica da Universidade Evangélica de Goiás - UniEVANGÉLICA, sob orientação de Viviane Soares.",
   },
   {
     titulo: "2. Dados que coletamos",

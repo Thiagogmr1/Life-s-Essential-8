@@ -309,12 +309,12 @@ Gerencia o estado do questionário e resultados:
 
 ## Acessibilidade — VLibras
 
-O widget VLibras (tradução para Libras) é integrado via script no `index.html`. Algumas notas técnicas:
+O widget VLibras (tradução para Libras) é integrado via script no `index.html` e gerenciado pelo hook `useVLibrasRefresh.js`. Notas técnicas:
 
-- Inicializado **uma única vez** no carregamento da página.
+- Inicializado no carregamento da página.
 - Roda sobre uma engine Unity WebGL e **não suporta reinicialização** a cada troca de tela.
-- O hook `useVLibrasRefresh.js` está **comentado** — tentar recriar o widget causa o erro `Widget is not a constructor`.
-- Para traduzir o conteúdo da tela atual, o usuário deve clicar novamente no ícone flutuante do avatar.
+- O hook `useVLibrasRefresh.js` atua como guardião seguro contra re-instanciações que causariam o erro `Widget is not a constructor`.
+- Para traduzir o conteúdo da tela atual, o usuário pode clicar no texto desejado com o avatar aberto ou interagir com o ícone flutuante do avatar.
 
 ---
 
