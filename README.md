@@ -15,7 +15,6 @@
   <img src="https://img.shields.io/badge/FastAPI-0.141-009688?logo=fastapi&logoColor=white" alt="FastAPI" />
   <img src="https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL" />
   <img src="https://img.shields.io/badge/Python-3.12+-3776AB?logo=python&logoColor=white" alt="Python" />
-  <img src="https://img.shields.io/badge/Licença-Pendente-lightgrey" alt="Licença" />
 </p>
 
 ---
