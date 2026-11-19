@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAssessment } from "../../context/AssessmentContext";
+import { useAuth } from "../../context/AuthContext";
 import ResultView from "./ResultView";
 import "./Results.css";
 import { exportResultToPdf } from "../../utils/exportPdf";
@@ -8,6 +9,7 @@ import { exportResultToPdf } from "../../utils/exportPdf";
 export default function Results() {
   const { id } = useParams();
   const { result, resetAnswers, enviando, history, carregarHistorico, erro } = useAssessment();
+  const { usuario } = useAuth();
   const navigate = useNavigate();
   const [carregando, setCarregando] = useState(false);
 
@@ -100,7 +102,7 @@ export default function Results() {
             <button
               type="button"
               className="results-card__btn results-card__btn--pdf"
-              onClick={() => exportResultToPdf(resultadoExibido)}
+              onClick={() => exportResultToPdf(resultadoExibido, usuario?.nome)}
             >
               <svg
                 width="16"

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAssessment } from "../../context/AssessmentContext";
+import { useAuth } from "../../context/AuthContext";
 import ResultView from "../Results/ResultView";
 import { exportResultToPdf } from "../../utils/exportPdf";
 import "../Results/Results.css";
@@ -8,6 +9,7 @@ import "../Results/Results.css";
 export default function HistoryDetail() {
   const { id } = useParams();
   const { history, carregarHistorico, erro } = useAssessment();
+  const { usuario } = useAuth();
   const [carregando, setCarregando] = useState(false);
 
   // Se o usuário chegar direto nesta URL (refresh, link compartilhado),
@@ -92,7 +94,7 @@ export default function HistoryDetail() {
             <button
               type="button"
               className="results-card__btn results-card__btn--pdf"
-              onClick={() => exportResultToPdf(entry)}
+              onClick={() => exportResultToPdf(entry, usuario?.nome)}
             >
               <svg
                 width="16"

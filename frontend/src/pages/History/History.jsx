@@ -1,11 +1,13 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAssessment } from "../../context/AssessmentContext";
+import { useAuth } from "../../context/AuthContext";
 import "./History.css";
 import { exportHistoryToPdf } from "../../utils/exportPdf";
 
 export default function History() {
   const { history, carregarHistorico, erro } = useAssessment();
+  const { usuario } = useAuth();
 
   useEffect(() => {
     carregarHistorico();
@@ -21,7 +23,7 @@ export default function History() {
             <button
               type="button"
               className="history-card__btn-pdf"
-              onClick={() => exportHistoryToPdf(history)}
+              onClick={() => exportHistoryToPdf(history, usuario?.nome)}
               title="Exportar histórico completo em PDF"
             >
               <svg

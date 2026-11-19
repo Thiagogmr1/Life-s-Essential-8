@@ -3,7 +3,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { LE8_DOMAINS } from "../data/le8Criteria";
 
-export function exportResultToPdf(result) {
+export function exportResultToPdf(result, userName) {
   const doc = new jsPDF();
   const dateStr = new Date(result.date).toLocaleDateString("pt-BR");
 
@@ -16,17 +16,24 @@ export function exportResultToPdf(result) {
   doc.setFont(undefined, "normal");
   doc.setTextColor(100);
   doc.text("Universidade Evangélica de Goiás - UniEVANGÉLICA", 14, 27);
-  doc.text(`Data da avaliação: ${dateStr}`, 14, 33);
+
+  let currentY = 33;
+  if (userName) {
+    doc.text(`Paciente / Usuário: ${userName}`, 14, currentY);
+    currentY += 6;
+  }
+  doc.text(`Data da avaliação: ${dateStr}`, 14, currentY);
 
   // Score principal
+  const scoreY = currentY + 17;
   doc.setFontSize(28);
   doc.setTextColor(20, 35, 63);
   doc.setFont(undefined, "bold");
-  doc.text(`${result.compositeScore} / 100`, 14, 50);
+  doc.text(`${result.compositeScore} / 100`, 14, scoreY);
 
   doc.setFontSize(12);
   doc.setFont(undefined, "normal");
-  doc.text(`Classificação: Saúde Cardiovascular ${result.classification.label}`, 14, 58);
+  doc.text(`Classificação: Saúde Cardiovascular ${result.classification.label}`, 14, scoreY + 8);
 
   // Tabela de detalhamento por domínio
   const rows = LE8_DOMAINS.map((domain) => [
@@ -35,7 +42,7 @@ export function exportResultToPdf(result) {
   ]);
 
   autoTable(doc, {
-    startY: 68,
+    startY: scoreY + 18,
     head: [["Domínio", "Pontuação"]],
     body: rows,
     headStyles: { fillColor: [22, 35, 63] },
@@ -68,7 +75,7 @@ export function exportResultToPdf(result) {
 // Desenha o cabeçalho padrão (título + subtítulo institucional) na
 // página atual. Reaproveitado tanto na capa/resumo quanto em cada
 // página de detalhe, pra manter o mesmo padrão visual em todo o PDF.
-function drawHeader(doc, title, subtitle) {
+function drawHeader(doc, title, subtitle, userName) {
   doc.setFontSize(16);
   doc.setTextColor(20, 35, 63);
   doc.setFont(undefined, "bold");
@@ -78,9 +85,17 @@ function drawHeader(doc, title, subtitle) {
   doc.setFont(undefined, "normal");
   doc.setTextColor(100);
   doc.text("Universidade Evangélica de Goiás - UniEVANGÉLICA", 14, 27);
-  if (subtitle) {
-    doc.text(subtitle, 14, 33);
+
+  let currentY = 33;
+  if (userName) {
+    doc.text(`Paciente / Usuário: ${userName}`, 14, currentY);
+    currentY += 6;
   }
+  if (subtitle) {
+    doc.text(subtitle, 14, currentY);
+    currentY += 6;
+  }
+  return currentY;
 }
 
 function drawFooterDisclaimer(doc, y) {
@@ -105,17 +120,18 @@ function drawFooterDisclaimer(doc, y) {
 
 // Exporta o histórico inteiro como uma única página-resumo com
 // todas as avaliações (data, pontuação, classificação).
-export function exportHistoryToPdf(history) {
+export function exportHistoryToPdf(history, userName) {
   if (!history || history.length === 0) return;
 
   const doc = new jsPDF();
   const today = new Date().toLocaleDateString("pt-BR");
 
-  drawHeader(
+  const startYSummary = drawHeader(
     doc,
     "Relatório Completo — NATSA",
-    `Gerado em: ${today} · ${history.length} avaliação(ões)`
-  );
+    `Gerado em: ${today} · ${history.length} avaliação(ões)`,
+    userName
+  ) + 4;
 
   const summaryRows = history.map((entry) => [
     new Date(entry.date).toLocaleDateString("pt-BR"),
@@ -124,14 +140,14 @@ export function exportHistoryToPdf(history) {
   ]);
 
   autoTable(doc, {
-    startY: 42,
+    startY: startYSummary,
     head: [["Data", "Pontuação", "Classificação"]],
     body: summaryRows,
     headStyles: { fillColor: [22, 35, 63] },
     styles: { fontSize: 10 },
   });
 
-  const summaryFinalY = doc.lastAutoTable.finalY || 42;
+  const summaryFinalY = doc.lastAutoTable.finalY || startYSummary;
   drawFooterDisclaimer(doc, summaryFinalY + 12);
 
   doc.save(`historico-le8-${today.replace(/\//g, "-")}.pdf`);
@@ -141,16 +157,22 @@ export function exportHistoryToPdf(history) {
     doc.addPage();
     const dateStr = new Date(entry.date).toLocaleDateString("pt-BR");
 
-    drawHeader(doc, "Detalhamento da Avaliação", `Data da avaliação: ${dateStr}`);
+    const headerEndY = drawHeader(
+      doc,
+      "Detalhamento da Avaliação",
+      `Data da avaliação: ${dateStr}`,
+      userName
+    );
 
+    const scoreY = headerEndY + 11;
     doc.setFontSize(28);
     doc.setTextColor(20, 35, 63);
     doc.setFont(undefined, "bold");
-    doc.text(`${entry.compositeScore} / 100`, 14, 50);
+    doc.text(`${entry.compositeScore} / 100`, 14, scoreY);
 
     doc.setFontSize(12);
     doc.setFont(undefined, "normal");
-    doc.text(`Classificação: Saúde Cardiovascular ${entry.classification.label}`, 14, 58);
+    doc.text(`Classificação: Saúde Cardiovascular ${entry.classification.label}`, 14, scoreY + 8);
 
     const domainRows = LE8_DOMAINS.map((domain) => [
       domain.label,
@@ -158,14 +180,14 @@ export function exportHistoryToPdf(history) {
     ]);
 
     autoTable(doc, {
-      startY: 68,
+      startY: scoreY + 18,
       head: [["Domínio", "Pontuação"]],
       body: domainRows,
       headStyles: { fillColor: [22, 35, 63] },
       styles: { fontSize: 10 },
     });
 
-    const finalY = doc.lastAutoTable.finalY || 68;
+    const finalY = doc.lastAutoTable.finalY || (scoreY + 18);
     drawFooterDisclaimer(doc, finalY + 12);
   });
 
