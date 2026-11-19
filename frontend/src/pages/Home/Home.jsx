@@ -1,11 +1,23 @@
 
 // src/pages/Home/Home.jsx
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PulseLine from "../../components/PulseLine/PulseLine";
+import ModalAvisoExames from "../../components/ModalAvisoExames/ModalAvisoExames";
 import "./Home.css";
 
 export default function Home() {
   const navigate = useNavigate();
+  const [modalAvisoAberto, setModalAvisoAberto] = useState(false);
+
+  const handleIniciarAvaliacao = () => {
+    setModalAvisoAberto(true);
+  };
+
+  const handleConfirmarInicio = () => {
+    setModalAvisoAberto(false);
+    navigate("/questionario");
+  };
 
   return (
     <main className="home">
@@ -31,7 +43,7 @@ export default function Home() {
         <div className="home__actions">
           <button
             className="home__cta"
-            onClick={() => navigate("/questionario")}
+            onClick={handleIniciarAvaliacao}
           >
             Iniciar avaliação
           </button>
@@ -49,6 +61,12 @@ export default function Home() {
           em conjunto com a avaliação de um profissional de saúde
         </p>
       </div>
+
+      <ModalAvisoExames
+        aberto={modalAvisoAberto}
+        onFechar={() => setModalAvisoAberto(false)}
+        onConfirmar={handleConfirmarInicio}
+      />
     </main>
   );
 }

@@ -1,0 +1,170 @@
+/* src/components/ModalAvisoExames/ModalAvisoExames.css */
+
+.modal-aviso {
+  width: min(520px, 92vw);
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius) * 1.5);
+  box-shadow: 0 12px 32px rgba(14, 24, 48, 0.18);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-body);
+  padding: 0;
+  margin: auto;
+}
+
+.modal-aviso::backdrop {
+  background: rgba(14, 24, 48, 0.65);
+  backdrop-filter: blur(2px);
+}
+
+.modal-aviso[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-aviso__container {
+  position: relative;
+  padding: 2rem 2rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.modal-aviso__fechar {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: transparent;
+  border: none;
+  color: var(--ink-soft);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border-radius: var(--radius);
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.modal-aviso__fechar:hover {
+  color: var(--uni-navy);
+  background: var(--brand-soft);
+}
+
+.modal-aviso__icone-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #FFF8E7;
+  color: #D97706; /* Âmbar vibrante de alerta */
+  margin-bottom: 1.25rem;
+  box-shadow: 0 0 0 8px #FEF3C7;
+}
+
+.modal-aviso__titulo {
+  margin: 0 0 1rem;
+  color: var(--uni-navy);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.modal-aviso__conteudo {
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  margin-bottom: 1.75rem;
+  text-align: left;
+}
+
+.modal-aviso__conteudo p {
+  margin: 0 0 1rem;
+}
+
+.modal-aviso__conteudo strong {
+  color: var(--uni-navy);
+}
+
+.modal-aviso__destaque {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: var(--paper);
+  border-left: 4px solid var(--uni-gold);
+  border-radius: 4px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.modal-aviso__destaque-icone {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--uni-gold);
+}
+
+.modal-aviso__acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.85rem;
+  width: 100%;
+}
+
+.modal-aviso__btn-cancelar {
+  padding: 0.75rem 1.25rem;
+  background: transparent;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.modal-aviso__btn-cancelar:hover {
+  background: var(--brand-soft);
+  color: var(--uni-navy);
+  border-color: var(--ink-soft);
+}
+
+.modal-aviso__btn-confirmar {
+  padding: 0.75rem 1.5rem;
+  background: var(--brand);
+  color: var(--surface);
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.modal-aviso__btn-confirmar:hover {
+  background: var(--uni-navy-deep);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-card);
+}
+
+@media (max-width: 480px) {
+  .modal-aviso__container {
+    padding: 1.5rem 1.25rem 1.25rem;
+  }
+
+  .modal-aviso__acoes {
+    flex-direction: column-reverse;
+  }
+
+  .modal-aviso__btn-cancelar,
+  .modal-aviso__btn-confirmar {
+    width: 100%;
+  }
+}
