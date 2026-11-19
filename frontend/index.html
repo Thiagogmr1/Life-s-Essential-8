@@ -1,14 +1,60 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/x-icon" href="/opcao-C-circulo-cheio.png" />
+    <link rel="icon" type="image/x-icon" href="/Natsa_logo.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>NATSA</title>
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- VLibras: Acessibilidade em Libras (Governo Federal) -->
+    <div vw class="enabled">
+      <div vw-access-button class="active"></div>
+      <div vw-plugin-wrapper>
+        <div class="vw-plugin-top-wrapper"></div>
+      </div>
+    </div>
+    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+    <script>
+      try {
+        window.__vlibrasInitialized = true;
+        new window.VLibras.Widget('https://vlibras.gov.br/app');
+      } catch (e) {
+        console.warn('[VLibras] Falha ao instanciar o widget:', e);
+      }
+
+      function injectVLibrasCustomStyles() {
+        const wrapper = document.getElementById('vlibras-access-wrapper');
+        if (wrapper && wrapper.shadowRoot && !wrapper.shadowRoot.getElementById('vlibras-custom-position')) {
+          const style = document.createElement('style');
+          style.id = 'vlibras-custom-position';
+          style.textContent = `
+            #vlibras-access {
+              top: var(--vlibras-top, auto) !important;
+              bottom: var(--vlibras-bottom, 24px) !important;
+              right: var(--vlibras-right, 16px) !important;
+              left: var(--vlibras-left, auto) !important;
+            }
+          `;
+          wrapper.shadowRoot.appendChild(style);
+          return true;
+        }
+        return false;
+      }
+
+      if (!injectVLibrasCustomStyles()) {
+        const observer = new MutationObserver(() => {
+          if (injectVLibrasCustomStyles()) {
+            observer.disconnect();
+          }
+        });
+        observer.observe(document.body, { childList: true });
+      }
+    </script>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

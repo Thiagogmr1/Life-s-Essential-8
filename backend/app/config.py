@@ -1,0 +1,1 @@
+VERSAO_TERMO_ATUAL = "1.0"

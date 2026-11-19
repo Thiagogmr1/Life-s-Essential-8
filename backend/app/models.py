@@ -1,0 +1,68 @@
+from enum import Enum
+from datetime import datetime, date, timezone
+from sqlmodel import SQLModel, Field, Column
+from sqlalchemy import Enum as SQLEnum
+from sqlalchemy.dialects.postgresql import JSONB
+import uuid
+
+
+class SexoEnum(str, Enum):
+    MASCULINO = "masculino"
+    FEMININO = "feminino"
+
+
+class RoleEnum(str, Enum):
+    COMUM = "comum"
+    ADMIN = "admin"
+
+
+class Usuario(SQLModel, table=True):
+    __tablename__ = "usuarios"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    nome: str
+    data_nascimento: date
+    sexo: SexoEnum = Field(
+        sa_column=Column(SQLEnum(SexoEnum, values_callable=lambda x: [e.value for e in x]))
+    )
+    estado: str = Field(max_length=2)
+    cidade: str
+    email: str = Field(unique=True, index=True)
+    senha_hash: str
+    role: RoleEnum = Field(
+        default=RoleEnum.COMUM,
+        sa_column=Column(SQLEnum(RoleEnum, values_callable=lambda x: [e.value for e in x])),
+    )
+    criado_em: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+
+class Avaliacao(SQLModel, table=True):
+    __tablename__ = "avaliacoes"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    usuario_id: uuid.UUID = Field(
+        foreign_key="usuarios.id", ondelete="CASCADE", index=True
+    )
+    data: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), index=True)
+    score_total: int
+    classificacao: str
+    score_dieta: int
+    score_atividade_fisica: int
+    score_tabagismo: int
+    score_sono: int
+    score_imc: int
+    score_colesterol: int
+    score_glicemia: int
+    score_pressao: int
+    respostas_brutas: dict = Field(sa_column=Column(JSONB))
+
+class Consentimento(SQLModel, table=True):
+    __tablename__ = "consentimentos"
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    usuario_id: uuid.UUID = Field(
+        foreign_key="usuarios.id", ondelete="CASCADE", index=True
+    )
+    versao_termo: str = Field(max_length=20)
+    aceito_em: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    revogado_em: datetime | None = None

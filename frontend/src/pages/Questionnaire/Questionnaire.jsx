@@ -1,23 +1,102 @@
-// src/pages/Questionnaire/Questionnaire.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAssessment } from "../../context/AssessmentContext";
 import { QUESTIONNAIRE_STEPS } from "../../data/questionnaireSteps";
 import QuestionCard from "../../components/QuestionCard/QuestionCard";
 
+// Input de número decimal controlado por texto local, em vez de
+// depender do `value` numérico vindo de fora. Isso evita o bug do
+// "volta pra zero ao apagar", já que o campo nunca é re-derivado de
+// Number(""). Aceita vírgula (padrão BR) e converte pra ponto só na
+// hora de repassar o valor numérico pro setField.
+function DecimalField({ value, onChange, placeholder, autoComma = false, maxDecimals = 2 }) {
+  const toDisplayString = (v) => (v === null || v === undefined || v === "" ? "" : String(v).replace(".", ","));
+
+  const [text, setText] = useState(() => toDisplayString(value));
+
+  // Sincroniza se o valor externo mudar por fora do input
+  // (ex: resetAnswers ao clicar em "Nova avaliação").
+  useEffect(() => {
+    setText(toDisplayString(value));
+  }, [value]);
+
+  function handleChange(e) {
+    let raw = e.target.value;
+
+    // mantém só dígitos e vírgula
+    raw = raw.replace(/[^\d,]/g, "");
+
+    // permite no máximo uma vírgula
+    const firstComma = raw.indexOf(",");
+    if (firstComma !== -1) {
+      raw = raw.slice(0, firstComma + 1) + raw.slice(firstComma + 1).replace(/,/g, "");
+    }
+
+    if (autoComma) {
+      // insere a vírgula automaticamente após o primeiro dígito
+      const digitsOnly = raw.replace(",", "");
+      if (digitsOnly.length <= 1) {
+        raw = digitsOnly;
+      } else {
+        const intPart = digitsOnly.slice(0, 1);
+        const decPart = digitsOnly.slice(1, 1 + maxDecimals);
+        raw = `${intPart},${decPart}`;
+      }
+    } else if (firstComma !== -1) {
+      // sem auto-vírgula, mas ainda limita casas decimais
+      const [intPart, decPart = ""] = raw.split(",");
+      raw = `${intPart},${decPart.slice(0, maxDecimals)}`;
+    }
+
+    setText(raw);
+
+    if (raw === "" || raw === ",") {
+      onChange(null);
+      return;
+    }
+
+    const numeric = parseFloat(raw.replace(",", "."));
+    onChange(Number.isNaN(numeric) ? null : numeric);
+  }
+
+  return (
+    <input
+      type="text"
+      inputMode="decimal"
+      placeholder={placeholder}
+      value={text}
+      onChange={handleChange}
+    />
+  );
+}
+
+// Handler compartilhado para os inputs type="number" que continuam
+// inteiros (colesterol, glicemia de jejum, sistólica, diastólica,
+// e os do tipo genérico "number"). Único ajuste: campo vazio vira
+// null, nunca 0 — resolve o bug de "não consigo apagar o último dígito".
+function handleIntegerChange(e, field, setField) {
+  const raw = e.target.value;
+  setField(field, raw === "" ? null : Number(raw));
+}
+
 export default function Questionnaire() {
   const navigate = useNavigate();
-  const { answers, setField, setDietItem, submitAssessment } = useAssessment();
+  const { answers, setField, setDietItem, submitAssessment, enviando, erro } = useAssessment();
   const [stepIndex, setStepIndex] = useState(0);
 
   const step = QUESTIONNAIRE_STEPS[stepIndex];
   const isFirst = stepIndex === 0;
   const isLast = stepIndex === QUESTIONNAIRE_STEPS.length - 1;
 
-  const goNext = () => {
+const goNext = async () => {
     if (isLast) {
-      submitAssessment();
-      navigate("/resultado");
+      try {
+        const resultado = await submitAssessment();
+        navigate(`/resultado/${resultado.id}`);
+      } catch {
+        // erro já fica disponível em `erro` (do contexto) e é exibido
+        // abaixo — usuário permanece na última pergunta para tentar de novo
+      }
     } else {
       setStepIndex((i) => i + 1);
     }
@@ -26,16 +105,20 @@ export default function Questionnaire() {
   const goBack = () => setStepIndex((i) => Math.max(0, i - 1));
 
   return (
-    <QuestionCard
-      label={step.label}
-      onNext={goNext}
-      onBack={goBack}
-      isFirst={isFirst}
-      isLast={isLast}
-      isValid={isStepValid(step, answers)}
-    >
-      {renderStepInput(step, answers, setField, setDietItem)}
-    </QuestionCard>
+    <>
+      {erro && <p role="alert">{erro}</p>}
+      <QuestionCard
+        label={step.label}
+        onNext={goNext}
+        onBack={goBack}
+        isFirst={isFirst}
+        isLast={isLast}
+        isValid={isStepValid(step, answers) && !enviando}
+        nextLabel={isLast && enviando ? "Calculando..." : undefined}
+      >
+        {renderStepInput(step, answers, setField, setDietItem)}
+      </QuestionCard>
+    </>
   );
 }
 
@@ -48,6 +131,11 @@ function isStepValid(step, answers) {
       return answers[step.field] !== null && answers[step.field] !== "";
     case "radio":
       return answers[step.field] !== null;
+    // NOVO: tipo genérico de checkbox solto (sim/não). Sempre válido —
+    // o valor default (false) já é uma resposta legítima ("não"),
+    // igual já acontece com lipidsMedication/glucoseMedication.
+    case "checkbox":
+      return true;
     case "bmi":
       return answers.weightKg && answers.heightM;
     case "lipids":
@@ -87,6 +175,10 @@ function renderStepInput(step, answers, setField, setDietItem) {
     case "number":
       return (
         <div>
+          {/* NOVO: texto de apoio e exemplos, opcionais — usado hoje
+              pelos passos de atividade moderada/vigorosa, mas qualquer
+              passo "number" pode ganhar isso sem precisar de código novo. */}
+          {step.helperText && <p className="question-card__helper">{step.helperText}</p>}
           <input
             type="number"
             min={step.min}
@@ -94,9 +186,16 @@ function renderStepInput(step, answers, setField, setDietItem) {
             step={step.step ?? 1}
             placeholder={step.placeholder}
             value={answers[step.field] ?? ""}
-            onChange={(e) => setField(step.field, e.target.value === "" ? "" : Number(e.target.value))}
+            onChange={(e) => handleIntegerChange(e, step.field, setField)}
           />
           <span> {step.unit}</span>
+          {step.examples && (
+            <ul className="question-card__examples">
+              {step.examples.map((example) => (
+                <li key={example}>{example}</li>
+              ))}
+            </ul>
+          )}
         </div>
       );
 
@@ -117,25 +216,43 @@ function renderStepInput(step, answers, setField, setDietItem) {
         </div>
       );
 
+    // NOVO: checkbox solto e genérico, usado hoje só pra exposição
+    // passiva ao tabagismo (secondhandSmoke), mas reutilizável por
+    // qualquer pergunta sim/não futura que não esteja grudada num
+    // campo numérico (diferente do padrão de lipids/glucose/bloodPressure,
+    // que embutem o checkbox de medicação junto do valor medido).
+    case "checkbox":
+      return (
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              checked={answers[step.field] ?? false}
+              onChange={(e) => setField(step.field, e.target.checked)}
+            />
+            {step.checkboxLabel ?? "Sim"}
+          </label>
+        </div>
+      );
+
     case "bmi":
       return (
         <div>
           <label>
             Peso (kg)
-            <input
-              type="number"
-              value={answers.weightKg ?? ""}
-              onChange={(e) => setField("weightKg", Number(e.target.value))}
+            <DecimalField
+              value={answers.weightKg}
+              onChange={(v) => setField("weightKg", v)}
+              placeholder="Ex: 75,5"
             />
           </label>
           <label>
             Altura (m)
-            <input
-              type="number"
-              step="0.01"
-              placeholder="Ex: 1.75"
-              value={answers.heightM ?? ""}
-              onChange={(e) => setField("heightM", Number(e.target.value))}
+            <DecimalField
+              value={answers.heightM}
+              onChange={(v) => setField("heightM", v)}
+              placeholder="Ex: 1,75"
+              autoComma
             />
           </label>
         </div>
@@ -149,7 +266,7 @@ function renderStepInput(step, answers, setField, setDietItem) {
             <input
               type="number"
               value={answers.nonHdlCholesterol ?? ""}
-              onChange={(e) => setField("nonHdlCholesterol", Number(e.target.value))}
+              onChange={(e) => handleIntegerChange(e, "nonHdlCholesterol", setField)}
             />
           </label>
           <label>
@@ -171,17 +288,17 @@ function renderStepInput(step, answers, setField, setDietItem) {
             <input
               type="number"
               value={answers.fastingGlucose ?? ""}
-              onChange={(e) => setField("fastingGlucose", Number(e.target.value))}
+              onChange={(e) => handleIntegerChange(e, "fastingGlucose", setField)}
             />
           </label>
           <p>ou</p>
           <label>
             Hemoglobina glicada — HbA1c (%)
-            <input
-              type="number"
-              step="0.1"
-              value={answers.hba1c ?? ""}
-              onChange={(e) => setField("hba1c", Number(e.target.value))}
+            <DecimalField
+              value={answers.hba1c}
+              onChange={(v) => setField("hba1c", v)}
+              placeholder="Ex: 5,4"
+              maxDecimals={1}
             />
           </label>
           <label>
@@ -203,7 +320,7 @@ function renderStepInput(step, answers, setField, setDietItem) {
             <input
               type="number"
               value={answers.systolic ?? ""}
-              onChange={(e) => setField("systolic", Number(e.target.value))}
+              onChange={(e) => handleIntegerChange(e, "systolic", setField)}
             />
           </label>
           <label>
@@ -211,8 +328,17 @@ function renderStepInput(step, answers, setField, setDietItem) {
             <input
               type="number"
               value={answers.diastolic ?? ""}
-              onChange={(e) => setField("diastolic", Number(e.target.value))}
+              onChange={(e) => handleIntegerChange(e, "diastolic", setField)}
             />
+          </label>
+          {/* NOVO: segue o mesmo padrão já usado em lipids/glucose */}
+          <label>
+            <input
+              type="checkbox"
+              checked={answers.bloodPressureMedication}
+              onChange={(e) => setField("bloodPressureMedication", e.target.checked)}
+            />
+            Faço uso de medicação para pressão alta (anti-hipertensivo)
           </label>
         </div>
       );

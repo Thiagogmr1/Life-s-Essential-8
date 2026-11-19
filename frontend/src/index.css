@@ -46,3 +46,18 @@ a { color: var(--brand); }
   outline: 2px solid var(--brand);
   outline-offset: 2px;
 }
+
+/* Posicionamento customizado do VLibras */
+:root {
+  --vlibras-top: auto;
+  --vlibras-bottom: 24px;
+  --vlibras-right: 16px;
+  --vlibras-left: auto;
+}
+
+[vw] [vw-access-button] {
+  top: var(--vlibras-top) !important;
+  bottom: var(--vlibras-bottom) !important;
+  right: var(--vlibras-right) !important;
+  left: var(--vlibras-left) !important;
+}

@@ -1,22 +1,128 @@
 // src/App.jsx
 import { Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
+import PublicRoute from "./components/PublicRoute/PublicRoute";
 import Header from "./components/Header/Header";
 import Home from "./pages/Home/Home";
+import Login from "./pages/Login/Login";
+import Cadastro from "./pages/Cadastro/Cadastro";
+import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword/ResetPassword";
 import Questionnaire from "./pages/Questionnaire/Questionnaire";
 import Results from "./pages/Results/Results";
 import History from "./pages/History/History";
+import HistoryDetail from "./pages/HistoryDetail/HistoryDetail";
+import AdminEstatisticas from "./pages/AdminEstatisticas/AdminEstatisticas";
+import AdminRoute from "./components/AdminRoute/AdminRoute";
+import useVLibrasRefresh from "./hooks/useVLibrasRefresh";
+import "./App.css";
 
 function App() {
+  useVLibrasRefresh();
+
   return (
-    <>
+    <AuthProvider>
       <Header />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/questionario" element={<Questionnaire />} />
-        <Route path="/resultado" element={<Results />} />
-        <Route path="/historico" element={<History />} />
-      </Routes>
-    </>
+      <main className="app-content">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/home"
+            element={
+              <PrivateRoute>
+                <Home />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/cadastro"
+            element={
+              <PublicRoute>
+                <Cadastro />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/esqueci-senha"
+            element={
+              <PublicRoute>
+                <ForgotPassword />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/redefinir-senha/:token"
+            element={
+              <PublicRoute>
+                <ResetPassword />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/questionario"
+            element={
+              <PrivateRoute>
+                <Questionnaire />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/resultado/:id?"
+            element={
+              <PrivateRoute>
+                <Results />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/historico"
+            element={
+              <PrivateRoute>
+                <History />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/historico/:id"
+            element={
+              <PrivateRoute>
+                <HistoryDetail />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+          path="/admin/estatisticas"
+          element={
+            <AdminRoute>
+              <AdminEstatisticas />
+            </AdminRoute>
+          }
+        />
+
+        </Routes> 
+      </main>
+    </AuthProvider>
   );
 }
 

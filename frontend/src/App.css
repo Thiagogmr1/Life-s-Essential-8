@@ -161,6 +161,10 @@
   }
 }
 
+.app-content {
+  padding-top: var(--header-height);
+}
+
 .ticks {
   position: relative;
   width: 100%;
