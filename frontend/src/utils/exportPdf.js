@@ -150,8 +150,6 @@ export function exportHistoryToPdf(history, userName) {
   const summaryFinalY = doc.lastAutoTable.finalY || startYSummary;
   drawFooterDisclaimer(doc, summaryFinalY + 12);
 
-  doc.save(`historico-le8-${today.replace(/\//g, "-")}.pdf`);
-
   // ---- Uma página detalhada por avaliação ----
   history.forEach((entry) => {
     doc.addPage();
